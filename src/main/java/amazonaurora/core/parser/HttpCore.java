@@ -10,6 +10,13 @@ import java.io.IOException;
 
 public class HttpCore {
 
+    /*
+     * Avoiding NEW Operator where it creates unwanted Objects.
+     * Hence Memory Constraint Option of using Static Classes Everywhere
+     * Only One copy per CPU(processor) per Thread exists.
+     */
+    private HttpCore(){}
+
     public static boolean pingTest(String url) throws IOException {
         CloseableHttpResponse response=null;
         try{

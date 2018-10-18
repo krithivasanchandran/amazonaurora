@@ -65,6 +65,13 @@
             <artifactId>opennlp-tools</artifactId>
             <version>1.9.0</version>
         </dependency>
+        <!-- https://mvnrepository.com/artifact/com.googlecode.libphonenumber/libphonenumber -->
+        <dependency>
+            <groupId>com.googlecode.libphonenumber</groupId>
+            <artifactId>libphonenumber</artifactId>
+            <version>8.9.15</version>
+        </dependency>
+
     </dependencies>
 
     <properties>

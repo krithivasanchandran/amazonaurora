@@ -11,6 +11,13 @@ public final class CoreParserService {
 
     private static Logger logger = LoggerFactory.getLogger(CoreParserService.class);
 
+    /*
+     * Avoiding NEW Operator where it creates unwanted Objects.
+     * Hence Memory Constraint Option of using Static Classes Everywhere
+     * Only One copy per CPU(processor) per Thread exists.
+     */
+    private CoreParserService(){}
+
     public static String submitSeed(String seedurl){
         logger.info("Received the Seed URL from Rest Controller" + seedurl);
 
@@ -34,6 +41,7 @@ public final class CoreParserService {
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 
         JsoupDomService.JsoupExtractor(seedurl,UserAgent);
+
     }
 
     //Generate Random
