@@ -40,7 +40,7 @@ public final class CoreParserService {
 
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 
-        JsoupDomService.JsoupExtractor(seedurl,UserAgent);
+        HomePageHTMLService.homePageCrawl(seedurl,UserAgent);
 
     }
 
