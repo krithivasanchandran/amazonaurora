@@ -29,7 +29,7 @@ public class CrawlController implements CrawlContract {
         AtomicBoolean isFree = new AtomicBoolean();
 
         /*
-         * Internal critical DDos Check - to avoid flooding the EndServer.
+         * Internal critical DDos Security Check - to avoid flooding the EndServer.
          */
         AtomicInteger requestThreshold = new AtomicInteger();
 
@@ -44,7 +44,7 @@ public class CrawlController implements CrawlContract {
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/master/startCrawl",method = {RequestMethod.GET})
     @Produces({MediaType.TEXT_PLAIN_VALUE})
-    public String initiateCrawl(@RequestParam String url) {
+    public void initiateCrawl(@RequestParam String url) {
 
         if(rateLimiter.isEmpty()){
             logger.info("Master Rest initiateCrawl URL submitted from rabbitmq is  ---> " + url);
@@ -52,7 +52,7 @@ public class CrawlController implements CrawlContract {
             rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
 
             if(url.isEmpty() || url == null){
-                return "Seed URL required to Start Crawl";
+                logger.error("Seed URL required to Start Crawl . It is empty or null. Seed Url to be in http://www.example.com form");
             }else{
                 isFree.set(false);
                 CoreParserService.submitSeed(url);
@@ -72,19 +72,19 @@ public class CrawlController implements CrawlContract {
                  * Security Implementation - Stricter control
                  * Validates if the request is lesser than 3 minutes wait time
                  */
-                if(currentTime - l < 180000){
+                if(currentTime - l < apiRateLimiter){
                     logger.warn(" Cannot Invoke Crawler ! Surpassed the Service Level Agreement ");
-                    return " Cannot Invoke Crawler ! Surpassed the Service Level Agreement ";
                 }else{
 
                     rateLimiter.clear();
                     rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
                     isFree.set(false);
-                    return CoreParserService.submitSeed(url);
+                    CoreParserService.submitSeed(url);
+
                 }
             }
+            isFree.set(true);
         }
-        return "It is a dummy one ";
     }
 
     @CrossOrigin(origins = "IP address", maxAge = 8000)

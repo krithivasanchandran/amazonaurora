@@ -31,74 +31,42 @@ public class HomePageHTMLService {
         if(document != null || !(document.text().isEmpty())){
 
             logger.info("Document object is not null -- Successfull Text Extraction ");
-            /*
-             * Perform Language Detection - Optional<T> - Chaining if the document text is null or empty
-             * then try to send the entire body text as input.
-             */
-            String dominantLang = LanguageDetection.InitiateLang(Optional.ofNullable(document.body().text()).orElse(document.wholeText()));
-            logger.info("Dominant Language " + dominantLang + ","+ HomePageHTMLService.class.getName());
 
-            int homepageLength = document.body().text().trim().length();
-            logger.info("HomePage Length " + homepageLength + "," + HomePageHTMLService.class.getName());
-            /*
-             * Body Text has length of 3000 characters and less.
-             */
-            String bodytext = (homepageLength < 5000) ? document.body().text().trim() : document.body().text().trim().substring(0,5000);
-            logger.info(" Body Text is less than 5000 characters " + bodytext + "," + HomePageHTMLService.class.getName());
+            partialExtraction(document,seedUrl);
 
-            String title = document.getElementsByAttribute("title").text();
-            logger.info(" Title Home Page " + title + "," + HomePageHTMLService.class.getName());
+            /*****************************
+             * Validate for robots.txt
+             ****************************/
 
-            /*
-             * Getting meta data Tags about the home page
-             */
-            String descriptionMetaData = parseMetaData(document);
-            logger.info(descriptionMetaData +","+HomePageHTMLService.class.getName());
-
-            // Open Graph Meta Tags Fetcher
-            String ogmetadata = FacebookOpenGraphMetaExtractor.extractFacebookOGData(document);
-            logger.info(ogmetadata + "," + HomePageHTMLService.class.getName());
-
-            /*
-             * The highest Order priority is h1 > h2 > h3 > h4 > h5 > h6
-             * Working on getting heading tags.
-             */
-            String[] headings = {"h1","h2","h3","h4","h5","h6"};
-            String heading=null;
-            for(String str: headings){
-                heading = document.body().getElementsByTag("h1").text();
-                if(heading == null){
-                    continue;
-                }else{
-                    logger.info("Heading Tags - Order of Priority - Break Happens if h1 > h2 > h3 > h4 > h5 > h6" + HomePageHTMLService.class.getName());
-                    break;
-                }
-            }
-
-            //Check for robots.txt
             String robotsChecker = seedUrl.concat("/robots.txt");
             boolean isRobotsExists = HttpCore.pingTest(robotsChecker);
             logger.info("Robots Checker - Root URL " + robotsChecker + "," + isRobotsExists + "," + HomePageHTMLService.class.getName());
             robotsChecker = null;
 
-            //Check for sitemap.xml
+
+            /******************************
+             * Validate for sitemap.xml
+             *****************************/
+
             String sitemap = seedUrl.concat("/sitemap.xml");
             boolean isSitemap = HttpCore.pingTest(sitemap);
             logger.info("Sitemap - RootURL Sitemap " + sitemap + " ,Does Sitemap exists --> " + isSitemap + "," + HomePageHTMLService.class.getName());
             sitemap = null;
 
-            /* - Change Detection Algorithm
-             * Calculate Hash Of Text - MD5 Hash. That takes in Hash of data
-             * and generates fixed length value. More Infomation here -
-             * https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
-             */
 
-            String hashCode = FacebookOpenGraphMetaExtractor.calculateHash(bodytext);
-            logger.info(" Generating HashCode - Text Content " + hashCode  + ", " + HomePageHTMLService.class.getName());
+            /************************************************************************
+             * Check Outgoing Links - Count - High Quality Links - Within Webpage
+             ************************************************************************/
+
+            Set<String> outgoingLinks = LinkExtractor.extractOutgoingLinks(document,seedUrl);
+            short totalOutLinks = (short)outgoingLinks.size();
+            logger.info("Total Outbound Links " + totalOutLinks + "," + HomePageHTMLService.class.getName());
 
             /***********************************************************************
              * Home Page - Extract Phone , Address and Email Id
              **********************************************************************/
+            String bodytext = (document.body().text().length() < 5000) ? document.body().text().trim() : document.body().text().trim().substring(0,5000);
+
             String[] phoneNumberList = PhoneNumberExtractor.extractPhoneNumber(bodytext).split(",");
             String emailList = EmailExtractor.EmailFinder(bodytext,seedUrl);
 
@@ -107,13 +75,6 @@ public class HomePageHTMLService {
                 logger.info("Contact Telephone Numbers in homepage - Writing it to StringBuilder " + t);
                 contactNumbersList.append(t);
             }
-
-            /************************************************************************
-             * Check Outgoing Links - Count - High Quality Links - Within Webpage
-             *********************************************************************/
-            Set<String> outgoingLinks = LinkExtractor.extractOutgoingLinks(document,seedUrl);
-            short totalOutLinks = (short)outgoingLinks.size();
-            logger.info("Total Outbound Links " + totalOutLinks + "," + HomePageHTMLService.class.getName());
 
             /************************************************************************************
              * Link Discovery of Contact Us Page. - Find different flavors of Contact US Page
@@ -155,6 +116,11 @@ public class HomePageHTMLService {
                  logger.info("Looks like there is no Contact Us Page from the home page " + HomePageHTMLService.class.getName());
              }
 
+             /*************************************************
+              * Parse URLS with depth 1 -> 1 hop from home page
+              *************************************************/
+
+
 
             /*
              * Named Entity Recognition - Location Identification -> Address Extraction and then
@@ -173,6 +139,66 @@ public class HomePageHTMLService {
             }
         }
         return "No Meta";
+    }
+
+    private static void partialExtraction(Document document,final String seedUrl) throws IOException {
+
+        /*
+         * Perform Language Detection - Optional<T> - Chaining if the document text is null or empty
+         * then try to send the entire body text as input.
+         */
+        String dominantLang = LanguageDetection.InitiateLang(Optional.ofNullable(document.body().text()).orElse(document.wholeText()));
+        logger.info("Dominant Language " + dominantLang + ","+ HomePageHTMLService.class.getName());
+
+
+        int homepageLength = document.body().text().trim().length();
+        logger.info("HomePage Length " + homepageLength + "," + HomePageHTMLService.class.getName());
+        /*
+         * Body Text has length of 3000 characters and less.
+         */
+        String bodytext = (homepageLength < 5000) ? document.body().text().trim() : document.body().text().trim().substring(0,5000);
+        logger.info(" Body Text is less than 5000 characters " + bodytext + "," + HomePageHTMLService.class.getName());
+
+
+
+        String title = document.getElementsByAttribute("title").text();
+        logger.info(" Title Home Page " + title + "," + HomePageHTMLService.class.getName());
+
+        /*
+         * Getting meta data Tags about the home page
+         */
+        String descriptionMetaData = parseMetaData(document);
+        logger.info(descriptionMetaData +","+HomePageHTMLService.class.getName());
+
+        // Open Graph Meta Tags Fetcher
+        String ogmetadata = FacebookOpenGraphMetaExtractor.extractFacebookOGData(document);
+        logger.info(ogmetadata + "," + HomePageHTMLService.class.getName());
+
+        /*
+         * The highest Order priority is h1 > h2 > h3 > h4 > h5 > h6
+         * Working on getting heading tags.
+         */
+        String[] headings = {"h1","h2","h3","h4","h5","h6"};
+        String heading=null;
+        for(String str: headings){
+            heading = document.body().getElementsByTag("h1").text();
+            if(heading == null){
+                continue;
+            }else{
+                logger.info("Heading Tags - Order of Priority - Break Happens if h1 > h2 > h3 > h4 > h5 > h6" + HomePageHTMLService.class.getName());
+                break;
+            }
+        }
+
+        /* - Change Detection Algorithm
+         * Calculate Hash Of Text - MD5 Hash. That takes in Hash of data
+         * and generates fixed length value. More Infomation here -
+         * https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
+         */
+
+        String hashCode = FacebookOpenGraphMetaExtractor.calculateHash(bodytext);
+        logger.info(" Generating HashCode - Text Content " + hashCode  + ", " + HomePageHTMLService.class.getName());
+
     }
 
 }

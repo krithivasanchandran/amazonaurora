@@ -35,19 +35,32 @@ public class PhoneNumberExtractor {
      */
     public static String extractPhoneNumber(String bodytext){
 
+        logger.info("Phone Number Extraction - Default Country is null");
+
         PhoneNumberUtil phoneUtil = PhoneNumberUtil.getInstance();
         Iterator<PhoneNumberMatch> itr = phoneUtil.findNumbers(bodytext, defaultCountry).iterator();
-        StringBuilder phonelist = new StringBuilder();
+        StringBuilder phonelist = null;
 
         while(itr.hasNext()){
+
             PhoneNumberMatch numberMatch = itr.next();
             Phonenumber.PhoneNumber number = numberMatch.number();
+
             if(phoneUtil.isValidNumber(number)){
+
+                phonelist = new StringBuilder();
+
+                logger.info("Phone number is valid" + "," + PhoneNumberExtractor.class.getName());
+
                 String phoneNumber = (String) bodytext.subSequence(numberMatch.start(),numberMatch.end());
+
+                logger.info("Phone number Extracted is --->" + phoneNumber + "," + PhoneNumberExtractor.class.getName())
+
                 phonelist.append(phoneNumber!= null ? phoneNumber+"," : "");
             }
         }
 
+        logger.info("Total List of phone numbers " + phonelist.toString());
         return phonelist.toString();
     }
 

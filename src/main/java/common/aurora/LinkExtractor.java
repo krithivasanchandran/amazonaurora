@@ -1,5 +1,6 @@
 package common.aurora;
 
+import aurora.rest.CrawlContract;
 import com.languagedetection.LanguageDetection;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ public class LinkExtractor {
         Set<String> outgoingSeeds = new HashSet<String>();
 
         document.select("a").stream().forEach((r1) -> {
+
+            if(outgoingSeeds.size() <= CrawlContract.totalCrawlSeeds){
 
             String rawHref = r1.attr("href").toLowerCase();
 
@@ -107,6 +110,9 @@ public class LinkExtractor {
                 System.out.println(" WARNING !!! None of the URL Extraction Worked Out !!! ");
                 System.out.println(" ********* URL NONMATCHED ONES ********\t" + rawHref);
             }
+            }else{
+                return;
+            }
         });
 
         /*
@@ -119,7 +125,7 @@ public class LinkExtractor {
 
     /*
      * Second Level Filter that filters - audio, video, images, css, javascript
-     * and other unsupported file formats.
+     * and other unsupported href links.
      */
     private static boolean shouldVisit(String url) {
         String href = url.toLowerCase();
@@ -130,4 +136,5 @@ public class LinkExtractor {
 
         return FILTERS;
     }
+
 }

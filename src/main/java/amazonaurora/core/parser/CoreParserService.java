@@ -1,5 +1,6 @@
 package amazonaurora.core.parser;
 
+import common.aurora.GetTimeStamp;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import useragents.rotator.UserAgentsRotator;
@@ -18,7 +19,7 @@ public final class CoreParserService {
      */
     private CoreParserService(){}
 
-    public static String submitSeed(String seedurl){
+    public static void submitSeed(String seedurl){
         logger.info("Received the Seed URL from Rest Controller" + seedurl);
 
         //Generate the UserAgent String
@@ -34,13 +35,18 @@ public final class CoreParserService {
         logger.info("Current User Agent String Pointing is " + UserAgent);
 
         if(performWebsiteTest(seedurl)){
-            logger.error("Ping Test Failed !! Make sure the website is up and running");
-            return "Ping Test Failed !! Make sure the website is up and running";
+            logger.error("Ping Test Failed !! Make sure the website is up and running" + "," + CoreParserService.class.getName() + "," +
+                    GetTimeStamp.getCurrentTimeStamp().toString());
         }
 
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 
-        HomePageHTMLService.homePageCrawl(seedurl,UserAgent);
+        try {
+            HomePageHTMLService.homePageCrawl(seedurl,UserAgent);
+        } catch (IOException e) {
+            logger.error(" IO Exception " + e.getMessage() + "," + CoreParserService.class.getName());
+            logger.error(e.getLocalizedMessage() + "," + CoreParserService.class.getName());
+        }
 
     }
 

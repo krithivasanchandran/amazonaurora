@@ -40,6 +40,9 @@ public class JsoupDomService {
                                 .ignoreHttpErrors(true)
                                 .get();
 
+            /*
+             * Logging Successfull and Failed URLs to the Ubuntu File Os.
+             */
 
             logger.info(" JSoup Extractor Method :: " + " User Agent :: " + useragent + " Timeout Set ::: 2000, referrer :: https://google.com "
             + "follow Redirects : 301 and 302  :: Temporary and Permanent Redirect :: True , Max Body Size : 0, IgnoreContent Type : True" );

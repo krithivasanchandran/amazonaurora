@@ -1,14 +1,22 @@
 package amazonaurora.core.parser;
 
+import com.languagedetection.LanguageDetection;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 
 public class HttpCore {
+
+    private static final String username = "krithivasan";
+    private static Logger logger = LoggerFactory.getLogger(HttpCore.class);
 
     /*
      * Avoiding NEW Operator where it creates unwanted Objects.
@@ -38,16 +46,58 @@ public class HttpCore {
             response = httpclient.execute(getRequest);
 
             //They are temporary and permanent redirects
-            if(response.getStatusLine().getStatusCode() == 301 || response.getStatusLine().getStatusCode() == 302) return true;
-
             //If there is a success 200 then return true
-            return (response.getStatusLine().getStatusCode() == 200);
+            boolean httpStatus = response.getStatusLine().getStatusCode() == 301 ||
+                                    response.getStatusLine().getStatusCode() == 302 ||
+                                    response.getStatusLine().getStatusCode() == 200;
+
+            logger.info(" HTTP Return Response is " + httpStatus + HttpCore.class.getName());
+
+            File filehandler = null;
+            FileWriter writer = null;
+            try{
+                if(httpStatus){
+                    filehandler = new File("/home/"+username+"/successLinks.txt");
+                    if(!filehandler.exists()){
+                        logger.info("File Create with the pathname " + "/home/"+username+"/successLinks.txt" + HttpCore.class.getName());
+                        filehandler.createNewFile();
+                    }
+                    filehandler.createNewFile();
+                    writer = new FileWriter(filehandler);
+                    writer.append("Sucess Crawling : " + url);
+                    logger.info("Sucess URLs added to the file  ----> " + url);
+
+                }else{
+                    filehandler = new File("/home/"+username+"/failureLinks.txt");
+                    if(!filehandler.exists()){
+                        logger.info("File Created with the pathname " + "/home/"+username+"/failureLinks.txt" + HttpCore.class.getName());
+                        filehandler.createNewFile();
+                    }
+                    writer = new FileWriter(filehandler);
+                    writer.append("Failure URL's : " + url);
+                    logger.info("Failure URLs added to the file  ----> " + url);
+                }
+            }catch(IOException ex){
+                logger.error(ex.getMessage());
+            }finally{
+                /*
+                 * Closing Handlers to avoid memory leaks and GC pauses
+                 */
+                if(writer != null){
+                    writer.flush();
+                    writer.close();
+                }
+            }
+
+            return httpStatus;
+
         }catch(Exception ex){
-            System.out.println(ex.getMessage());
+            logger.error(ex.getMessage() + HttpCore.class.getName());
         }finally{
             if(response!=null){
                 response.close();
             }
+
         }
         return false;
     }
