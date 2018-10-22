@@ -1,6 +1,7 @@
 package amazonaurora.core.parser;
 
 import common.aurora.GetTimeStamp;
+import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import useragents.rotator.UserAgentsRotator;
@@ -55,7 +56,7 @@ public final class CoreParserService {
         return (short) new Random().nextInt(19);
     }
 
-    private static boolean performWebsiteTest(String root) {
+    public static boolean performWebsiteTest(String root) {
         try {
             if (!HttpCore.pingTest(root)) {
                 logger.error(" FAILED PING TEST !!! CRITICAL WEBSITE ISNT UP AND RUNNING");

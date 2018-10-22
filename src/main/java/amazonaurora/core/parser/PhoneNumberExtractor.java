@@ -54,7 +54,7 @@ public class PhoneNumberExtractor {
 
                 String phoneNumber = (String) bodytext.subSequence(numberMatch.start(),numberMatch.end());
 
-                logger.info("Phone number Extracted is --->" + phoneNumber + "," + PhoneNumberExtractor.class.getName())
+                logger.info("Phone number Extracted is --->" + phoneNumber + "," + PhoneNumberExtractor.class.getName());
 
                 phonelist.append(phoneNumber!= null ? phoneNumber+"," : "");
             }

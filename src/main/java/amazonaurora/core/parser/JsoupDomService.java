@@ -1,5 +1,6 @@
 package amazonaurora.core.parser;
 
+import aurora.rest.CrawlContract;
 import com.languagedetection.LanguageDetection;
 import common.aurora.LinkExtractor;
 import org.jsoup.Jsoup;
@@ -11,6 +12,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.Optional;
+import java.util.Random;
 import java.util.Set;
 
 public class JsoupDomService {
@@ -41,6 +43,18 @@ public class JsoupDomService {
                                 .get();
 
             /*
+             * Politeness Delay between Subsequent Requests.- 3 Seconds - We dont
+             * Choke the Server - implications will lead to IP Banning and
+             * Subnet IP Address BlackListing.
+             */
+            try{
+                Thread.sleep(CrawlContract.politenessDelayBetweenSubesquentRequests);
+            }catch(InterruptedException ex){
+                logger.error("Interrupted Excpetion happened when using Thread.sleep(3000)" + JsoupDomService.class.getName());
+            }
+
+
+            /*
              * Logging Successfull and Failed URLs to the Ubuntu File Os.
              */
 
@@ -57,4 +71,4 @@ public class JsoupDomService {
         return null;
     }
 
-    }
+}

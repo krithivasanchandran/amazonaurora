@@ -1,5 +1,7 @@
 package amazonaurora.core.parser;
 
+import aurora.rest.CrawlContract;
+import aurora.rest.RetryLogic;
 import com.languagedetection.LanguageDetection;
 import common.aurora.EmailExtractor;
 import common.aurora.GetTimeStamp;
@@ -10,9 +12,7 @@ import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.swing.text.html.HTML;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.Optional;
 import java.util.Set;
 
@@ -24,6 +24,8 @@ public class HomePageHTMLService {
     public static void homePageCrawl(final String seedUrl, final String useragent) throws IOException {
 
         Document document = JsoupDomService.JsoupExtractor(seedUrl,useragent);
+
+        document = RetryLogic.retry(document,seedUrl,useragent);
 
         logger.info("Result of first Document Extraction" + HomePageHTMLService.class.getName());
         logger.info(document.text() + GetTimeStamp.getCurrentTimeStamp().toString());
@@ -118,8 +120,9 @@ public class HomePageHTMLService {
 
              /*************************************************
               * Parse URLS with depth 1 -> 1 hop from home page
+              * I don't want to choke their servers.
               *************************************************/
-
+              CrawlDepthFactor1.crawlAtDepthFactor1(outgoingLinks);
 
 
             /*
@@ -141,7 +144,11 @@ public class HomePageHTMLService {
         return "No Meta";
     }
 
-    private static void partialExtraction(Document document,final String seedUrl) throws IOException {
+    /*
+     * Applies to Child URL's.
+     */
+
+    public static void partialExtraction(Document document,final String seedUrl) throws IOException {
 
         /*
          * Perform Language Detection - Optional<T> - Chaining if the document text is null or empty
@@ -185,7 +192,7 @@ public class HomePageHTMLService {
             if(heading == null){
                 continue;
             }else{
-                logger.info("Heading Tags - Order of Priority - Break Happens if h1 > h2 > h3 > h4 > h5 > h6" + HomePageHTMLService.class.getName());
+                logger.info("Heading Tags - Order of Priority - Break Happens if anyone of those h tags exists h1 > h2 > h3 > h4 > h5 > h6" + HomePageHTMLService.class.getName());
                 break;
             }
         }

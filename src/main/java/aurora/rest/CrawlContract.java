@@ -24,4 +24,17 @@ public interface CrawlContract {
      * Security Enforce Rule - API Rate Limiter = 60000
      */
     int apiRateLimiter = 60000;
+
+    /*
+     *
+     * Politeness Delay between Subsequent Requests.- 3 Seconds - We dont
+     * Choke the Server - implications will lead to IP Banning and
+     * Subnet IP Address BlackListing.
+     */
+     long politenessDelayBetweenSubesquentRequests = 3000;
+
+     /*
+      * Retry - 2 Times on Failure
+      */
+     short retryRequest = 2;
 }

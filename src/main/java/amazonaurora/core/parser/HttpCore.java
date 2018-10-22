@@ -1,5 +1,6 @@
 package amazonaurora.core.parser;
 
+import aurora.rest.CrawlContract;
 import com.languagedetection.LanguageDetection;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
@@ -42,6 +43,17 @@ public class HttpCore {
 
             HttpGet getRequest = new HttpGet(url);
             getRequest.setConfig(requestConfig);
+
+            /*
+             * Politeness Delay between Subsequent Requests.- 3 Seconds - We dont
+             * Choke the Server - implications will lead to IP Banning and
+             * Subnet IP Address BlackListing.
+             */
+            try{
+                Thread.sleep(1200);
+            }catch(InterruptedException ex){
+                logger.error("Interrupted Excpetion happened when using Thread.sleep(1200)" + JsoupDomService.class.getName());
+            }
 
             response = httpclient.execute(getRequest);
 

@@ -73,7 +73,7 @@ public class KeywordAnalyser implements Serializable {
             try {
                     file = new File("/home/"+username+"/file.txt");
                     file.createNewFile();
-                    logger.info("FileName created in path" + "," + "/home/"+username+"/file.txt" + "::")
+                    logger.info("FileName created in path" + "," + "/home/"+username+"/file.txt" + "::");
 
                     serializeFile = new FileOutputStream("/home/"+username+"/file.txt");
 

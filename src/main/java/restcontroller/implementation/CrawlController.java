@@ -4,12 +4,12 @@ import amazonaurora.core.parser.CoreParserService;
 import aurora.rest.CrawlContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.http.MediaType;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.*;
 
-import javax.ws.rs.Produces;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -18,6 +18,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 @RestController
+@Configuration
 public class CrawlController implements CrawlContract {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -43,7 +44,6 @@ public class CrawlController implements CrawlContract {
     //Security Only IP address from that rabbitmq will be able to access it.
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/master/startCrawl",method = {RequestMethod.GET})
-    @Produces({MediaType.TEXT_PLAIN_VALUE})
     public void initiateCrawl(@RequestParam String url) {
 
         if(rateLimiter.isEmpty()){
@@ -89,7 +89,6 @@ public class CrawlController implements CrawlContract {
 
     @CrossOrigin(origins = "IP address", maxAge = 8000)
     @RequestMapping(value = "/master/isfree",method = {RequestMethod.GET})
-    @Produces({MediaType.ALL_VALUE})
     public Boolean checkiffree() {
         return isFree.get();
     }
