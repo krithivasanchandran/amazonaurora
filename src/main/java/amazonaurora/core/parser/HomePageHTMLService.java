@@ -1,11 +1,11 @@
 package amazonaurora.core.parser;
 
+import Duplicate.metadata.DuplicateFinder;
 import aurora.rest.CrawlContract;
 import aurora.rest.RetryLogic;
 import com.languagedetection.LanguageDetection;
-import common.aurora.EmailExtractor;
-import common.aurora.GetTimeStamp;
-import common.aurora.LinkExtractor;
+import com.languagedetection.TextNormalizer;
+import common.aurora.*;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
@@ -16,8 +16,13 @@ import java.io.IOException;
 import java.util.Optional;
 import java.util.Set;
 
+/*
+ * Parsing of home page and child Pages - Ranking Score calculation based on few criterias.
+ */
+
 public class HomePageHTMLService {
     private static Logger logger = LoggerFactory.getLogger(HomePageHTMLService.class);
+    private static short Rankscore = 0;
 
     private HomePageHTMLService(){}
 
@@ -26,9 +31,6 @@ public class HomePageHTMLService {
         Document document = JsoupDomService.JsoupExtractor(seedUrl,useragent);
 
         document = RetryLogic.retry(document,seedUrl,useragent);
-
-        logger.info("Result of first Document Extraction" + HomePageHTMLService.class.getName());
-        logger.info(document.text() + GetTimeStamp.getCurrentTimeStamp().toString());
 
         if(document != null || !(document.text().isEmpty())){
 
@@ -43,8 +45,8 @@ public class HomePageHTMLService {
             String robotsChecker = seedUrl.concat("/robots.txt");
             boolean isRobotsExists = HttpCore.pingTest(robotsChecker);
             logger.info("Robots Checker - Root URL " + robotsChecker + "," + isRobotsExists + "," + HomePageHTMLService.class.getName());
-            robotsChecker = null;
 
+            Rankscore += isRobotsExists ? (short)10 : (short)5;
 
             /******************************
              * Validate for sitemap.xml
@@ -55,6 +57,8 @@ public class HomePageHTMLService {
             logger.info("Sitemap - RootURL Sitemap " + sitemap + " ,Does Sitemap exists --> " + isSitemap + "," + HomePageHTMLService.class.getName());
             sitemap = null;
 
+            Rankscore += isSitemap ? (short)10 : (short)5;
+
 
             /************************************************************************
              * Check Outgoing Links - Count - High Quality Links - Within Webpage
@@ -63,6 +67,8 @@ public class HomePageHTMLService {
             Set<String> outgoingLinks = LinkExtractor.extractOutgoingLinks(document,seedUrl);
             short totalOutLinks = (short)outgoingLinks.size();
             logger.info("Total Outbound Links " + totalOutLinks + "," + HomePageHTMLService.class.getName());
+
+            Rankscore += (totalOutLinks > 0) ? (short)10 : (short)5;
 
             /***********************************************************************
              * Home Page - Extract Phone , Address and Email Id
@@ -126,9 +132,19 @@ public class HomePageHTMLService {
 
 
             /*
-             * Named Entity Recognition - Location Identification -> Address Extraction and then
-             * Person Names Identification. - Apache OpenNLP.
+             * Named Entity Recognition - Location Identification -> Address Extraction
              */
+
+            String cityStateZip = AddressParser.extractAddressParts(bodytext);
+            String[] parts = cityStateZip.split("\\s+");
+            for(String str : parts){
+                if(AddressParser.namedEntityLocationRecognition(str.toLowerCase().trim())){
+                   String stateName =  USAStateAbbreviations.getPOFullName(str.toLowerCase().trim());
+                    cityStateZip = cityStateZip.concat(stateName);
+                }
+            }
+
+            // Write the values to the database
 
         }
     }
@@ -157,9 +173,13 @@ public class HomePageHTMLService {
         String dominantLang = LanguageDetection.InitiateLang(Optional.ofNullable(document.body().text()).orElse(document.wholeText()));
         logger.info("Dominant Language " + dominantLang + ","+ HomePageHTMLService.class.getName());
 
+        Rankscore += dominantLang != null || !(dominantLang.isEmpty()) ? (short)10 : (short)5;
 
         int homepageLength = document.body().text().trim().length();
         logger.info("HomePage Length " + homepageLength + "," + HomePageHTMLService.class.getName());
+
+        Rankscore += homepageLength > 5000 ? (short)10 : (short)5;
+
         /*
          * Body Text has length of 3000 characters and less.
          */
@@ -169,7 +189,14 @@ public class HomePageHTMLService {
 
 
         String title = document.getElementsByAttribute("title").text();
-        logger.info(" Title Home Page " + title + "," + HomePageHTMLService.class.getName());
+        String normalizedTitle = TextNormalizer.Normalizer.getWords(title);
+        logger.info(" Title Home Page " + normalizedTitle + "," + HomePageHTMLService.class.getName());
+
+        if(normalizedTitle != null || !(normalizedTitle.isEmpty())){
+            Rankscore += 10;
+        }else{
+            Rankscore += 5;
+        }
 
         /*
          * Getting meta data Tags about the home page
@@ -177,9 +204,13 @@ public class HomePageHTMLService {
         String descriptionMetaData = parseMetaData(document);
         logger.info(descriptionMetaData +","+HomePageHTMLService.class.getName());
 
+        Rankscore += descriptionMetaData != null || !(descriptionMetaData.isEmpty()) ? (short) 10 : (short) 5;
+
         // Open Graph Meta Tags Fetcher
         String ogmetadata = FacebookOpenGraphMetaExtractor.extractFacebookOGData(document);
         logger.info(ogmetadata + "," + HomePageHTMLService.class.getName());
+
+        Rankscore += ogmetadata != null || !(ogmetadata.isEmpty()) ? (short) 10 : (short) 5;
 
         /*
          * The highest Order priority is h1 > h2 > h3 > h4 > h5 > h6
@@ -197,6 +228,8 @@ public class HomePageHTMLService {
             }
         }
 
+        Rankscore += heading != null || !(heading.isEmpty()) ? (short) 10 : (short) 5;
+
         /* - Change Detection Algorithm
          * Calculate Hash Of Text - MD5 Hash. That takes in Hash of data
          * and generates fixed length value. More Infomation here -
@@ -205,6 +238,15 @@ public class HomePageHTMLService {
 
         String hashCode = FacebookOpenGraphMetaExtractor.calculateHash(bodytext);
         logger.info(" Generating HashCode - Text Content " + hashCode  + ", " + HomePageHTMLService.class.getName());
+
+        Rankscore += hashCode != null || !(hashCode.isEmpty()) ? (short) 10 : (short) 5;
+
+
+        Boolean duplicateCheck = DuplicateFinder.submitForDuplicatesCheck(hashCode);
+        if(duplicateCheck){
+            String str = "Has duplicates within the 16 Pages Crawled from the website.";
+            logger.info(str + HomePageHTMLService.class.getName());
+        }
 
     }
 

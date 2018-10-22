@@ -1,5 +1,6 @@
 package amazonaurora.core.parser;
 
+import Duplicate.metadata.OnExitStrategy;
 import common.aurora.GetTimeStamp;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -43,12 +44,16 @@ public final class CoreParserService {
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 
         try {
+
             HomePageHTMLService.homePageCrawl(seedurl,UserAgent);
+
+            logger.info("Completed the CRAWLING LIFECYCLE !! NOW DELETING AND MOVING ON");
+            OnExitStrategy.deleteFiles();
+
         } catch (IOException e) {
             logger.error(" IO Exception " + e.getMessage() + "," + CoreParserService.class.getName());
             logger.error(e.getLocalizedMessage() + "," + CoreParserService.class.getName());
         }
-
     }
 
     //Generate Random

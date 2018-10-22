@@ -1,5 +1,6 @@
 package common.aurora;
 
+import com.languagedetection.TextNormalizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,8 +43,10 @@ public class KeywordAnalyser implements Serializable {
             logger.info("Keyword Analyser Method Call Function -> keywordCount entered ," + KeywordAnalyser.class.getName());
 
             //Replace 2 white space to Single White Space
-            String str = htmlText.replaceAll("\\s{2,}", " ").trim();
-            logger.info("After removing more than 2 whitespaces -> " + str);
+            String text = htmlText.replaceAll("\\s{2,}", " ").trim();
+            String str = TextNormalizer.Normalizer.getWords(text);
+
+            logger.info("After Normalizing and removing the Stop words - Keyword Analyses. -> " + str);
 
             StringTokenizer tokenizer = new StringTokenizer(str);
 

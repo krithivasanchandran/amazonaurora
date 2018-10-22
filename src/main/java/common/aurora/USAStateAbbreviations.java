@@ -12,6 +12,8 @@ public class USAStateAbbreviations {
 
     private static final Map<String,String> statesUSA = new HashMap<String,String>(51);
 
+    private USAStateAbbreviations(){}
+
     static{
         statesUSA.put("al","alabama");
         statesUSA.put("ak","alaska");

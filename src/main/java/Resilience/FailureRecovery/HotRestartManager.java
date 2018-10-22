@@ -33,6 +33,10 @@ public final class HotRestartManager implements Serializable {
             FileOutputStream fout = new FileOutputStream("/home/"+user+"/childLinks.ser");
             ObjectOutputStream oos = new ObjectOutputStream(fout);
             oos.writeObject(childLinks);
+            logger.info("Serializable - Writing Chunks of URL into the file to persist on crash");
+
+            fout.close();
+            oos.close();
 
         } catch (FileNotFoundException e) {
             logger.info(e.getMessage() + HotRestartManager.class.getName());
@@ -58,6 +62,7 @@ public final class HotRestartManager implements Serializable {
 
                 ObjectInputStream in = new ObjectInputStream(fin);
                 Set<String> childLinks = (Set<String>)in.readObject();
+                logger.info(" Resiliency -> Reading AutoSaved DataObject from Serialized File");
                 fin.close();
                 in.close();
                 return childLinks != null ? childLinks : null;

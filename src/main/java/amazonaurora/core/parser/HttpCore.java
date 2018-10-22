@@ -39,8 +39,6 @@ public class HttpCore {
                                                 .setRedirectsEnabled(false)
                                                 .build();
 
-
-
             HttpGet getRequest = new HttpGet(url);
             getRequest.setConfig(requestConfig);
 
@@ -52,10 +50,11 @@ public class HttpCore {
             try{
                 Thread.sleep(1200);
             }catch(InterruptedException ex){
-                logger.error("Interrupted Excpetion happened when using Thread.sleep(1200)" + JsoupDomService.class.getName());
+                logger.error("Interrupted Exception happened when using Thread.sleep(1200)" + JsoupDomService.class.getName());
             }
 
             response = httpclient.execute(getRequest);
+
 
             //They are temporary and permanent redirects
             //If there is a success 200 then return true
