@@ -19,16 +19,17 @@ public class LinkExtractor {
      * Hence Memory Constraint Option of using Static Classes Everywhere
      * Only One copy per CPU(processor) per Thread exists.
      */
+
     private LinkExtractor(){}
 
     public static Set<String> extractOutgoingLinks(Document document, String rooturl) {
 
         final Set<String> duplicates = new HashSet<String>();
-        Set<String> outgoingSeeds = new HashSet<String>();
+        final Set<String> outgoingSeeds = new HashSet<String>(16);
 
         document.select("a").stream().forEach((r1) -> {
 
-            if(outgoingSeeds.size() <= CrawlContract.totalCrawlSeeds){
+            if(outgoingSeeds.size() <= CrawlContract.totalCrawlSeeds && r1 != null){
 
             String rawHref = r1.attr("href").toLowerCase();
 
@@ -51,9 +52,9 @@ public class LinkExtractor {
                     && !rawHref.contains("yahoo.com")
                     && !rawHref.startsWith("javascript");
 
-            /*
-             * Validate if href contains http or https
-             */
+                                /******************************************
+                                 * Validate if href contains http or https
+                                 ******************************************/
             if((rawHref.startsWith("http://") || rawHref.startsWith("https://")) && nomatchesCondition){
 
                 /*
@@ -61,57 +62,72 @@ public class LinkExtractor {
                  */
                 if(!duplicates.contains(rawHref) && (rawHref.startsWith("http://"+rooturl) || rawHref.startsWith("https://"+rooturl))){
 
-                    System.out.println(" Filtered & Adding Extarcted Links -----===================> " + rawHref);
+                    logger.info("Filtered and Adding Extracted Links to the Outgoing Set" + rawHref + LinkExtractor.class.getName());
                     duplicates.add(rawHref);
                     outgoingSeeds.add(rawHref);
                 }
             }else if (nomatchesCondition) {
 
-                /*
-                 * Checks if the URL's Start with /a.html or abc/acd.html are valid ones
-                 */
-                boolean misnomer = rawHref.startsWith("/")
+                /***********************************************************************************
+                 * Checks if the URL's Start with /a.html or /abc.* or abc/acd.html are valid ones
+                 ***********************************************************************************/
+                boolean validOnes = rawHref.startsWith("/")
                         || rawHref.startsWith("?")
                         || rawHref.matches("[a-zA-Z0-9](.*)")
                         || rawHref.endsWith(".html")
                         || rawHref.startsWith("#");
 
-                if (misnomer) {
+                StringBuilder buildOutgoingLinks = new StringBuilder();
+
+                if (validOnes) {
 
                     if(rooturl.endsWith("/") && rawHref.matches("[a-zA-Z0-9](.*)")){
-                        rawHref = rooturl.concat(rawHref);
+
+                        rawHref =  buildOutgoingLinks.append(rooturl).append(rawHref).toString();
+
                     }else if(rooturl.matches("(.*)[a-zA-Z0-9]") && rawHref.startsWith("/")){
-                        rawHref = rooturl.concat(rawHref);
+
+                        rawHref = buildOutgoingLinks.append(rooturl).append(rawHref).toString();
+
                     }else if(rooturl.endsWith("/") && rawHref.startsWith("/")){
+
                         String normalizedString = rooturl.substring(0, rooturl.length()-1);
-                        rawHref = normalizedString.concat(rawHref);
+                        rawHref = buildOutgoingLinks.append(normalizedString).append(rawHref).toString();
+
                     }else if(rooturl.matches("(.*)[a-zA-Z0-9]") && rawHref.matches("[a-zA-Z0-9](.*)")){
-                        rawHref = rooturl.concat("/"+rawHref);
+
+                        rawHref = buildOutgoingLinks.append(rooturl).append("/").append(rawHref).toString();
+
                     }else{
+
                         if(rawHref.startsWith("#")){
+
                             rawHref = rawHref.substring(1,rawHref.length());
-                            rawHref=rooturl.concat(rawHref);
+                            rawHref= buildOutgoingLinks.append(rooturl).append(rawHref).toString();
                         }
                     }
                 }
+                buildOutgoingLinks.setLength(0);
+
 
                 if ((rawHref.startsWith(rooturl)) && !duplicates.contains(rawHref)) {
 
-                    System.out.println(" Filtered Extarcted Links -----> " + rawHref);
+                    logger.info(" Filtered Extarcted Links -----> " + rawHref);
                     /*
                      * Second Level URL Filtering - Only Quality Links should get in
                      */
                     if(!shouldVisit(rawHref)){
+
+                        logger.info("Done Filtering the href links .. Now adding them to the outgoing Queue");
+
                         duplicates.add(rawHref);
                         outgoingSeeds.add(rawHref);
                     }
                 }
             }else{
-                System.out.println(" WARNING !!! None of the URL Extraction Worked Out !!! ");
-                System.out.println(" ********* URL NONMATCHED ONES ********\t" + rawHref);
+                logger.info(" WARNING !!! None of the URL Extraction Worked Out !!! ");
+                logger.info(" ********* URL NONMATCHED ONES ********" + rawHref);
             }
-            }else{
-                return;
             }
         });
 

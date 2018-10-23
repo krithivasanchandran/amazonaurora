@@ -65,7 +65,7 @@ public class CrawlController implements CrawlContract {
                  * Validates if the request is lesser than 3 minutes wait time
                  */
                 if(currentTime - l < apiRateLimiter){
-                    logger.warn(" Cannot Invoke Crawler ! Surpassed the Service Level Agreement ");
+                    logger.warn(" Cannot Invoke Crawler ! Surpassed the Service Level Agreement - Please try after 1 minute");
                 }else{
 
                     rateLimiter.clear();

@@ -5,11 +5,9 @@ package amazonaurora.core.parser;
  * More Info Here - https://github.com/googlei18n/libphonenumber
  */
 
-import com.google.i18n.phonenumbers.AsYouTypeFormatter;
 import com.google.i18n.phonenumbers.PhoneNumberMatch;
 import com.google.i18n.phonenumbers.PhoneNumberUtil;
 import com.google.i18n.phonenumbers.Phonenumber;
-import com.languagedetection.LanguageDetection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

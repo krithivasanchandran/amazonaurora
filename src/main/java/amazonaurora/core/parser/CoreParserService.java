@@ -13,7 +13,7 @@ import java.io.IOException;
 import java.util.Random;
 import java.util.Set;
 
-public final class CoreParserService {
+public class CoreParserService {
 
     private static Logger logger = LoggerFactory.getLogger(CoreParserService.class);
 
@@ -35,6 +35,7 @@ public final class CoreParserService {
         Set<String> resumeRestartedSeedURLs = HotRestartManager.hotRestartLoadFile();
 
         if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
+            logger.info("Resume crawling from last left point -> Applies only to Child Url's");
             CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs);
         }
 
@@ -74,7 +75,5 @@ public final class CoreParserService {
     public static short generateRandom(){
         return (short) new Random().nextInt(19);
     }
-
-
 
 }

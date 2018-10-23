@@ -1,6 +1,7 @@
 package amazonaurora.core.parser;
 
 import Duplicate.metadata.DuplicateFinder;
+import Resilience.FailureRecovery.HotRestartManager;
 import aurora.rest.CrawlContract;
 import aurora.rest.RetryLogic;
 import com.languagedetection.LanguageDetection;
@@ -18,6 +19,7 @@ import java.util.Set;
 
 /*
  * Parsing of home page and child Pages - Ranking Score calculation based on few criterias.
+ * Seed URL -> Root Url.
  */
 
 public class HomePageHTMLService {
@@ -30,7 +32,9 @@ public class HomePageHTMLService {
 
         Document document = JsoupDomService.JsoupExtractor(seedUrl,useragent);
 
-        document = RetryLogic.retry(document,seedUrl,useragent);
+        if(document == null){
+            document = RetryLogic.retry(document,seedUrl,useragent);
+        }
 
         if(document != null || !(document.text().isEmpty())){
 
@@ -65,6 +69,10 @@ public class HomePageHTMLService {
              ************************************************************************/
 
             Set<String> outgoingLinks = LinkExtractor.extractOutgoingLinks(document,seedUrl);
+            /*
+             * Serialize and save object - Outgoing Links.
+             */
+            HotRestartManager.persistchildLinks(outgoingLinks);
             short totalOutLinks = (short)outgoingLinks.size();
             logger.info("Total Outbound Links " + totalOutLinks + "," + HomePageHTMLService.class.getName());
 
@@ -73,7 +81,8 @@ public class HomePageHTMLService {
             /***********************************************************************
              * Home Page - Extract Phone , Address and Email Id
              **********************************************************************/
-            String bodytext = (document.body().text().length() < 5000) ? document.body().text().trim() : document.body().text().trim().substring(0,5000);
+            String bodytext = TextNormalizer.Normalizer.getWords(document.body().text().trim());
+            bodytext = (bodytext.length() < 5000) ? bodytext.trim() : bodytext.substring(0,5000);
 
             String[] phoneNumberList = PhoneNumberExtractor.extractPhoneNumber(bodytext).split(",");
             String emailList = EmailExtractor.EmailFinder(bodytext,seedUrl);
@@ -175,7 +184,9 @@ public class HomePageHTMLService {
 
         Rankscore += dominantLang != null || !(dominantLang.isEmpty()) ? (short)10 : (short)5;
 
-        int homepageLength = document.body().text().trim().length();
+        String bodytext = TextNormalizer.Normalizer.getWords(document.body().text().trim());
+
+        int homepageLength = bodytext.length();
         logger.info("HomePage Length " + homepageLength + "," + HomePageHTMLService.class.getName());
 
         Rankscore += homepageLength > 5000 ? (short)10 : (short)5;
@@ -183,7 +194,7 @@ public class HomePageHTMLService {
         /*
          * Body Text has length of 3000 characters and less.
          */
-        String bodytext = (homepageLength < 5000) ? document.body().text().trim() : document.body().text().trim().substring(0,5000);
+        bodytext = (homepageLength < 5000) ? bodytext : bodytext.substring(0,5000);
         logger.info(" Body Text is less than 5000 characters " + bodytext + "," + HomePageHTMLService.class.getName());
 
 
