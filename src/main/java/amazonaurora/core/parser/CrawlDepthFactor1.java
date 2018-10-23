@@ -5,6 +5,7 @@ package amazonaurora.core.parser;
  * Hash Code Calculation and Keyword Density Calculator.
  */
 
+import Resilience.FailureRecovery.PingTester;
 import common.aurora.GetTimeStamp;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -46,7 +47,7 @@ public class CrawlDepthFactor1 {
         final String UserAgent = uagent.userAgentRotator(randShort);
         logger.info("Current User Agent String Pointing is " + UserAgent);
 
-        if(CoreParserService.performWebsiteTest(childurl)){
+        if(PingTester.performWebsiteTest(childurl)){
             logger.error("Ping Test Failed !! Make sure the website is up and running" + "," + CrawlDepthFactor1.class.getName() + "," +
                     GetTimeStamp.getCurrentTimeStamp().toString());
         }

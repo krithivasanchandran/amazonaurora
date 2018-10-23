@@ -5,6 +5,7 @@ import aurora.rest.CrawlContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,16 +19,10 @@ import java.util.concurrent.atomic.AtomicInteger;
  */
 
 @RestController
-@Configuration
+@Controller
 public class CrawlController implements CrawlContract {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
-
-        //Global Variables - Thread Safe - Metrics for this JVM Status
-        /*
-         * Returns Boolean Value to tell if the JVM is free or not.
-         */
-        AtomicBoolean isFree = new AtomicBoolean();
 
         /*
          * Internal critical DDos Security Check - to avoid flooding the EndServer.
@@ -54,12 +49,9 @@ public class CrawlController implements CrawlContract {
             if(url.isEmpty() || url == null){
                 logger.error("Seed URL required to Start Crawl . It is empty or null. Seed Url to be in http://www.example.com form");
             }else{
-                isFree.set(false);
                 CoreParserService.submitSeed(url);
-                isFree.set(true);
             }
         }else{
-            isFree.set(false);
             /*
              * Check the last service request - Time in milliseconds
              */
@@ -78,18 +70,11 @@ public class CrawlController implements CrawlContract {
 
                     rateLimiter.clear();
                     rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
-                    isFree.set(false);
                     CoreParserService.submitSeed(url);
 
                 }
             }
-            isFree.set(true);
         }
     }
 
-    @CrossOrigin(origins = "IP address", maxAge = 8000)
-    @RequestMapping(value = "/master/isfree",method = {RequestMethod.GET})
-    public Boolean checkiffree() {
-        return isFree.get();
-    }
 }

@@ -1,5 +1,6 @@
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import restcontroller.implementation.CrawlController;
@@ -9,7 +10,6 @@ import restcontroller.implementation.CrawlController;
 @EnableAutoConfiguration
 public class AuroraMainApp {
     public static void main(String[] args) {
-
         SpringApplication.run(AuroraMainApp.class, args);
     }
 }

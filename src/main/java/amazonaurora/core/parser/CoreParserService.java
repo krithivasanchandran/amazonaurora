@@ -1,6 +1,8 @@
 package amazonaurora.core.parser;
 
 import Duplicate.metadata.OnExitStrategy;
+import Resilience.FailureRecovery.HotRestartManager;
+import Resilience.FailureRecovery.PingTester;
 import common.aurora.GetTimeStamp;
 import org.jsoup.nodes.Document;
 import org.slf4j.Logger;
@@ -9,6 +11,7 @@ import useragents.rotator.UserAgentsRotator;
 
 import java.io.IOException;
 import java.util.Random;
+import java.util.Set;
 
 public final class CoreParserService {
 
@@ -22,7 +25,18 @@ public final class CoreParserService {
     private CoreParserService(){}
 
     public static void submitSeed(String seedurl){
+
         logger.info("Received the Seed URL from Rest Controller" + seedurl);
+
+        /*****************************************************************************
+         * Failure Proof - Load File if On JVM Crash and Restart to resume Crawling.
+         * Checks the bytes in file if present crawls the child URL's.
+         *****************************************************************************/
+        Set<String> resumeRestartedSeedURLs = HotRestartManager.hotRestartLoadFile();
+
+        if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
+            CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs);
+        }
 
         //Generate the UserAgent String
         /*
@@ -36,7 +50,7 @@ public final class CoreParserService {
         final String UserAgent = uagent.userAgentRotator(randShort);
         logger.info("Current User Agent String Pointing is " + UserAgent);
 
-        if(performWebsiteTest(seedurl)){
+        if(PingTester.performWebsiteTest(seedurl)){
             logger.error("Ping Test Failed !! Make sure the website is up and running" + "," + CoreParserService.class.getName() + "," +
                     GetTimeStamp.getCurrentTimeStamp().toString());
         }
@@ -61,17 +75,6 @@ public final class CoreParserService {
         return (short) new Random().nextInt(19);
     }
 
-    public static boolean performWebsiteTest(String root) {
-        try {
-            if (!HttpCore.pingTest(root)) {
-                logger.error(" FAILED PING TEST !!! CRITICAL WEBSITE ISNT UP AND RUNNING");
-                System.out.println(" FAILED PING TEST !!! CRITICAL WEBSITE ISNT UP AND RUNNING ");
-                return true;
-            }
-        } catch (IOException io) {
-            System.out.println(io.getMessage() + " Adding failed URL's to the queue");
-        }
-        return false;
-    }
+
 
 }
