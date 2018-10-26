@@ -31,7 +31,7 @@ public interface CrawlContract {
      * Choke the Server - implications will lead to IP Banning and
      * Subnet IP Address BlackListing.
      */
-     long politenessDelayBetweenSubesquentRequests = 3000;
+     long politenessDelayBetweenSubesquentRequests = 1500;
 
      /*
       * Retry - 2 Times on Failure

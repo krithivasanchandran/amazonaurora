@@ -1,6 +1,7 @@
 package amazonaurora.core.parser;
 
 import Duplicate.metadata.DuplicateFinder;
+import MemoryListener.MemoryNotifier;
 import Resilience.FailureRecovery.HotRestartManager;
 import aurora.rest.CrawlContract;
 import aurora.rest.RetryLogic;
@@ -30,6 +31,8 @@ public class HomePageHTMLService {
 
     public static void homePageCrawl(final String seedUrl, final String useragent) throws IOException {
 
+        MemoryNotifier.printRuntimeMemory();
+
         Document document = JsoupDomService.JsoupExtractor(seedUrl,useragent);
 
         if(document == null){
@@ -45,8 +48,7 @@ public class HomePageHTMLService {
             /*****************************
              * Validate for robots.txt
              ****************************/
-
-            String robotsChecker = seedUrl.concat("/robots.txt");
+            String robotsChecker = seedUrl.endsWith("/") ? seedUrl.concat("robots.txt") : seedUrl.concat("/robots.txt");
             boolean isRobotsExists = HttpCore.pingTest(robotsChecker);
             logger.info("Robots Checker - Root URL " + robotsChecker + "," + isRobotsExists + "," + HomePageHTMLService.class.getName());
 
@@ -56,7 +58,7 @@ public class HomePageHTMLService {
              * Validate for sitemap.xml
              *****************************/
 
-            String sitemap = seedUrl.concat("/sitemap.xml");
+            String sitemap = seedUrl.endsWith("/") ? seedUrl.concat("sitemap.xml") : seedUrl.concat("/sitemap.xml");
             boolean isSitemap = HttpCore.pingTest(sitemap);
             logger.info("Sitemap - RootURL Sitemap " + sitemap + " ,Does Sitemap exists --> " + isSitemap + "," + HomePageHTMLService.class.getName());
             sitemap = null;
@@ -94,7 +96,7 @@ public class HomePageHTMLService {
             String emailList = EmailExtractor.EmailFinder(bodytext,seedUrl);
 
 
-
+            MemoryNotifier.printRuntimeMemory();
             /************************************************************************************
              * Link Discovery of Contact Us Page. - Find different flavors of Contact US Page
              * The loop executes for only one contactUs per homepage
@@ -130,8 +132,34 @@ public class HomePageHTMLService {
                  }
              }
 
-             if(!checkContactsOnEnter){
+
+             if(!checkContactsOnEnter) {
                  logger.info("Looks like there is no Contact Us Page from the home page " + HomePageHTMLService.class.getName());
+                 /*
+                  * Construct ContactUs - URL and find if it works.
+                  */
+                 for (int i = 0; i < contacts.length; i++) {
+                     String temp = seedUrl.endsWith("/") ? seedUrl.concat(contacts[i]) : seedUrl.concat("/".concat(contacts[i]));
+
+                     Document doc_1 = JsoupDomService.JsoupExtractor(temp, useragent);
+
+                     if (doc_1 != null) {
+                         logger.info(" ContactUs Page - Discovery Link Exists !! Now Crawling");
+
+                         //Extract Phone number -
+                         String contactsPhone = PhoneNumberExtractor.extractPhoneNumber(doc_1.text());
+
+                         /*
+                          * EmailList Extraction from Contact Us Page
+                          */
+                         emailList = emailList.concat(EmailExtractor.EmailFinder(doc_1.text(), temp));
+                         logger.info(" List of Emails -->  " + emailList + " ," + HomePageHTMLService.class.getName() + ", TimeStamp -> " + contactsPhone + " --> " + GetTimeStamp.getCurrentTimeStamp().toString());
+
+                         logger.info("Contact Telephone Numbers in " + temp + "- Writing it to StringBuilder " + HomePageHTMLService.class.getName());
+                         contactNumbersList.append(contactsPhone);
+
+                     }
+                 }
              }
 
              /*************************************************
@@ -153,7 +181,9 @@ public class HomePageHTMLService {
                     cityStateZip = cityStateZip.concat(stateName);
                 }
             }
+            logger.info("Address Extraction Results : " + cityStateZip + HomePageHTMLService.class.getName());
 
+            MemoryNotifier.printRuntimeMemory();
             // Write the values to the database
 
         }
@@ -197,6 +227,7 @@ public class HomePageHTMLService {
          */
         bodytext = (homepageLength < 5000) ? bodytext : bodytext.substring(0,5000);
         logger.info(" Body Text is less than 5000 characters " + bodytext + "," + HomePageHTMLService.class.getName());
+        MemoryNotifier.printRuntimeMemory();
 
 
 
@@ -235,7 +266,7 @@ public class HomePageHTMLService {
             if(heading == null){
                 continue;
             }else{
-                logger.info("Heading Tags - Order of Priority - Break Happens if anyone of those h tags exists h1 > h2 > h3 > h4 > h5 > h6" + HomePageHTMLService.class.getName());
+                logger.info("Heading Tags - Order of Priority - Break Happens if anyone of those h tags exists h1 > h2 > h3 > h4 > h5 > h6 --> " +heading + " ----> classname " + HomePageHTMLService.class.getName());
                 break;
             }
         }
@@ -247,19 +278,19 @@ public class HomePageHTMLService {
          * and generates fixed length value. More Infomation here -
          * https://docs.oracle.com/javase/8/docs/api/java/security/MessageDigest.html
          */
+        MemoryNotifier.printRuntimeMemory();
 
         String hashCode = FacebookOpenGraphMetaExtractor.calculateHash(bodytext);
         logger.info(" Generating HashCode - Text Content " + hashCode  + ", " + HomePageHTMLService.class.getName());
 
         Rankscore += hashCode != null || !(hashCode.isEmpty()) ? (short) 10 : (short) 5;
 
-
         Boolean duplicateCheck = DuplicateFinder.submitForDuplicatesCheck(hashCode);
         if(duplicateCheck){
             String str = "Has duplicates within the 16 Pages Crawled from the website.";
             logger.info(str + HomePageHTMLService.class.getName());
         }
-
+        MemoryNotifier.printRuntimeMemory();
     }
 
 }

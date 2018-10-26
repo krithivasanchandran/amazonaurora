@@ -34,7 +34,7 @@ public class EmailExtractor {
             String email = m.group();
             logger.info(" Email Extractor Service - Email -->" + email + "," + EmailExtractor.class.getName());
             System.out.println(" Email Address :::  " + email);
-            emailList.append(email);
+            emailList.append(email).append(" ").append(",");
             logger.info("Website URL the email is extracted in " + urlReference);
             System.out.println(" Website URL :::  " + urlReference);
             }

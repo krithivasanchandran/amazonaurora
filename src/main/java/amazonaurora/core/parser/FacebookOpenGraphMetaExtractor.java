@@ -41,22 +41,25 @@ public class FacebookOpenGraphMetaExtractor {
             switch(keyset){
 
                 case "og:title":
-                    ogbuilder.append(" og:title :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:title :" + e.attr("content")).append("||");
                     break;
                 case "og:type":
-                    ogbuilder.append(" og:type :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:type :" + e.attr("content")).append("||");
                     break;
                 case "og:url":
-                    ogbuilder.append(" og:url :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:url :" + e.attr("content")).append("||");
                     break;
                 case "og:image":
-                    ogbuilder.append(" og:image :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:image :" + e.attr("content")).append("||");
                     break;
                 case "og:site_name":
-                    ogbuilder.append(" og:site_name :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:site_name :" + e.attr("content")).append("||");
                     break;
                 case "og:description":
-                    ogbuilder.append(" og:description :" + elements.attr("content")).append("||");
+                    ogbuilder.append(" og:description :" + e.attr("content")).append("||");
+                    break;
+                case "og:locale":
+                    ogbuilder.append(" og:locale :" + e.attr("content")).append("||");
                     break;
             }
         }

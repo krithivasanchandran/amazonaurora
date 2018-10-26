@@ -10,6 +10,10 @@ public class DuplicateFinder {
 
     private DuplicateFinder(){}
 
+    /*
+     * Static array defined with 16 bytes memory slots to avoid memory wastage.
+     */
+
     private static final String[] HashBasedDuplicateChecker = new String[16];
 
     private static short lastInsertedIndex = 0;

@@ -48,7 +48,7 @@ public class HttpCore {
              * Subnet IP Address BlackListing.
              */
             try{
-                Thread.sleep(1200);
+                Thread.sleep(500);
             }catch(InterruptedException ex){
                 logger.error("Interrupted Exception happened when using Thread.sleep(1200)" + JsoupDomService.class.getName());
             }

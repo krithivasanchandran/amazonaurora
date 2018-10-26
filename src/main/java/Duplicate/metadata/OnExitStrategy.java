@@ -47,10 +47,10 @@ public final class OnExitStrategy {
                 for(int k=0;k<filenames.length; k++){
 
                     File file = new File(filenames[k]);
-
+                    logger.info("Exit Strategy ---> Does the file exists ---> " + file.exists());
                     if(file.exists()){
                         String s = file.delete() ? "File is deleted" : "Delete Operation is failed";
-                        logger.info(" Deleted Files - Failure Recovery Files at path " + filenames[k] + OnExitStrategy.class.getName());
+                        logger.info(s + filenames[k] + OnExitStrategy.class.getName());
                     }else{
                         logger.info("Sorry Exit Delete File Failed !! File at this path " + filenames[k] + " Failed ");
                     }

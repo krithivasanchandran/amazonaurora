@@ -25,7 +25,7 @@ public class LinkExtractor {
     public static Set<String> extractOutgoingLinks(Document document, String rooturl) {
 
         final Set<String> duplicates = new HashSet<String>();
-        final Set<String> outgoingSeeds = new HashSet<String>(16);
+        final Set<String> outgoingSeeds = new HashSet<String>(17);
 
         document.select("a").stream().forEach((r1) -> {
 
@@ -63,8 +63,12 @@ public class LinkExtractor {
                 if(!duplicates.contains(rawHref) && (rawHref.startsWith("http://"+rooturl) || rawHref.startsWith("https://"+rooturl))){
 
                     logger.info("Filtered and Adding Extracted Links to the Outgoing Set" + rawHref + LinkExtractor.class.getName());
-                    duplicates.add(rawHref);
-                    outgoingSeeds.add(rawHref);
+
+                    if(!rooturl.equalsIgnoreCase(rawHref)){
+
+                        duplicates.add(rawHref);
+                        outgoingSeeds.add(rawHref);
+                    }
                 }
             }else if (nomatchesCondition) {
 
@@ -119,9 +123,11 @@ public class LinkExtractor {
                     if(!shouldVisit(rawHref)){
 
                         logger.info("Done Filtering the href links .. Now adding them to the outgoing Queue");
+                        if(!rooturl.equalsIgnoreCase(rawHref)){
 
-                        duplicates.add(rawHref);
-                        outgoingSeeds.add(rawHref);
+                            duplicates.add(rawHref);
+                            outgoingSeeds.add(rawHref);
+                        }
                     }
                 }
             }else{
