@@ -50,7 +50,7 @@ public class JsoupDomService {
             try{
                 Thread.sleep(CrawlContract.politenessDelayBetweenSubesquentRequests);
             }catch(InterruptedException ex){
-                logger.error("Interrupted Excpetion happened when using Thread.sleep(3000)" + JsoupDomService.class.getName());
+                logger.error("Interrupted Exception happened when using Thread.sleep(3000)" + JsoupDomService.class.getName());
             }
 
 

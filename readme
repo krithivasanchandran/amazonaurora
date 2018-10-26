@@ -7,7 +7,7 @@ abstract and interface
 lambdas
 generics. ----
 sorting
-
+searching - String.
 
 Need to write to DB
 JSOUPDomService.java
@@ -15,4 +15,4 @@ JSOUPDomService.java
 - homepageLength
 - title
 - contains images
--
+- get the number of threads from jvm runtime

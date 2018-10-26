@@ -72,7 +72,7 @@ public class HomePageHTMLService {
             /*
              * Serialize and save object - Outgoing Links.
              */
-            HotRestartManager.persistchildLinks(outgoingLinks);
+         // ---> Need to check in ubuntu file system   HotRestartManager.persistchildLinks(outgoingLinks);
             short totalOutLinks = (short)outgoingLinks.size();
             logger.info("Total Outbound Links " + totalOutLinks + "," + HomePageHTMLService.class.getName());
 
@@ -84,14 +84,16 @@ public class HomePageHTMLService {
             String bodytext = TextNormalizer.Normalizer.getWords(document.body().text().trim());
             bodytext = (bodytext.length() < 5000) ? bodytext.trim() : bodytext.substring(0,5000);
 
-            String[] phoneNumberList = PhoneNumberExtractor.extractPhoneNumber(bodytext).split(",");
+            String phoneNumberList = PhoneNumberExtractor.extractPhoneNumber(bodytext);
+            StringBuilder contactNumbersList = new StringBuilder();
+
+            if(phoneNumberList != null && !(phoneNumberList.isEmpty())){
+                    logger.info("Contact Telephone Numbers in homepage - Writing it to StringBuilder " + phoneNumberList);
+                    contactNumbersList.append(phoneNumberList).append(",");
+            }
             String emailList = EmailExtractor.EmailFinder(bodytext,seedUrl);
 
-            StringBuilder contactNumbersList = new StringBuilder();
-            for(String t:phoneNumberList){
-                logger.info("Contact Telephone Numbers in homepage - Writing it to StringBuilder " + t);
-                contactNumbersList.append(t);
-            }
+
 
             /************************************************************************************
              * Link Discovery of Contact Us Page. - Find different flavors of Contact US Page
@@ -110,18 +112,17 @@ public class HomePageHTMLService {
 
                          if(doc != null){
                              //Extract Phone number -
-                             String[] contactsPhone = PhoneNumberExtractor.extractPhoneNumber(doc.text()).split(",");
+                             String contactsPhone = PhoneNumberExtractor.extractPhoneNumber(doc.text());
 
                              /*
                               * EmailList Extraction from Contact Us Page
                               */
                              emailList = emailList.concat(EmailExtractor.EmailFinder(doc.text(),s));
-                             logger.info(" List of Emails -->  " + emailList + " ," + HomePageHTMLService.class.getName() +", TimeStamp -> " + GetTimeStamp.getCurrentTimeStamp().toString());
+                             logger.info(" List of Emails -->  " + emailList + " ," + HomePageHTMLService.class.getName() +", TimeStamp -> " + contactsPhone +" --> " + GetTimeStamp.getCurrentTimeStamp().toString());
 
-                             for(String f: contactsPhone){
-                                 logger.info("Contact Telephone Numbers in "+ s+"- Writing it to StringBuilder " + f + HomePageHTMLService.class.getName());
-                                 contactNumbersList.append(f);
-                             }
+                                 logger.info("Contact Telephone Numbers in "+ s+"- Writing it to StringBuilder " + HomePageHTMLService.class.getName());
+                                 contactNumbersList.append(contactsPhone);
+
                              checkContactsOnEnter = true;
                              break;
                          }

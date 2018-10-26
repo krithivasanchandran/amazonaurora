@@ -58,8 +58,8 @@ public class PhoneNumberExtractor {
             }
         }
 
-        logger.info("Total List of phone numbers " + phonelist.toString());
-        return phonelist.toString();
+        logger.info("Total List of phone numbers " + ((phonelist != null) ? phonelist.toString() : "Nothing to Print as the phonelist is empty"));
+        return (phonelist != null) ? phonelist.toString() : null;
     }
 
 }

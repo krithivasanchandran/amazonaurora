@@ -31,6 +31,7 @@ public class DuplicateFinder {
                             HashBasedDuplicateChecker[++lastInsertedIndex] = hashMD5Key;
                             return true;
                         }
+                        i++;
                     }
                     return false;
                 }

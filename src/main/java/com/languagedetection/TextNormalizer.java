@@ -30,7 +30,7 @@ public final class TextNormalizer {
                  * Not a Filler Word.
                  */
                 if(!FillerWords.match(s_l)){
-                    wordBuilder.append(s_l);
+                    wordBuilder.append(s_l).append(" ");
                 }
             }
             LOGGER.info("Normalized Text is " + wordBuilder.toString() + TextNormalizer.class.getName());

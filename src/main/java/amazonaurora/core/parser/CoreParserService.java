@@ -32,12 +32,23 @@ public class CoreParserService {
          * Failure Proof - Load File if On JVM Crash and Restart to resume Crawling.
          * Checks the bytes in file if present crawls the child URL's.
          *****************************************************************************/
-        Set<String> resumeRestartedSeedURLs = HotRestartManager.hotRestartLoadFile();
 
-        if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
-            logger.info("Resume crawling from last left point -> Applies only to Child Url's");
-            CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs);
+
+        try{
+            Set<String> resumeRestartedSeedURLs = HotRestartManager.hotRestartLoadFile();
+
+            if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
+                logger.info("Resume crawling from last left point -> Applies only to Child Outgoing Url's");
+                CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs);
+            }else{
+                logger.info("Failed to resume crawling as the seed URLs are not present");
+            }
+        }catch(Exception ex){
+            logger.info(ex.getMessage());
+            logger.info(ex.getLocalizedMessage());
+            logger.info(CoreParserService.class.getName());
         }
+
 
         //Generate the UserAgent String
         /*

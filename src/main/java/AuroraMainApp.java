@@ -10,6 +10,14 @@ import restcontroller.implementation.CrawlController;
 @EnableAutoConfiguration
 public class AuroraMainApp {
     public static void main(String[] args) {
+
+        Runtime runtime = Runtime.getRuntime();
+
+        if(runtime != null){
+            int numberOfProcessors = runtime.availableProcessors();
+            System.out.println("Number of processors available to this JVM: " + numberOfProcessors);
+        }
+
         SpringApplication.run(AuroraMainApp.class, args);
     }
 }

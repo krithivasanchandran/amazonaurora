@@ -8,6 +8,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
+import javax.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -38,8 +39,8 @@ public class CrawlController implements CrawlContract {
 
     //Security Only IP address from that rabbitmq will be able to access it.
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
-    @RequestMapping(value = "/master/startCrawl",method = {RequestMethod.GET})
-    public void initiateCrawl(@RequestParam String url) {
+    @RequestMapping(value = "/startCrawl",method = {RequestMethod.GET})
+    public void initiateCrawl(@PathParam("url") String url) {
 
         if(rateLimiter.isEmpty()){
             logger.info("Master Rest initiateCrawl URL submitted from rabbitmq is  ---> " + url);
