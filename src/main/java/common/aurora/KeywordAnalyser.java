@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.StringTokenizer;
 
 /*
@@ -17,7 +18,7 @@ import java.util.StringTokenizer;
  * required for writing back to the Database to save memory.
  * Object.read() and Object.write() method of Serializable Class is used.
  */
-public class KeywordAnalyser implements Serializable {
+public class KeywordAnalyser{
 
     private static Logger logger = LoggerFactory.getLogger(KeywordAnalyser.class);
 
@@ -27,48 +28,50 @@ public class KeywordAnalyser implements Serializable {
 
     /*
      * Byte takes 8 bits compared to Char taking 16 bits . Hence using byte[] for low memory constrains.
+     * Converted Later to String as it takes unwanted CPU cycles.
      */
-    private static final Map<byte[],Integer> keywordMatrix = new HashMap<byte[],Integer>(100);
+    private static final Map<String,Integer> keywordMatrix = new HashMap<String,Integer>(100);
 
     /*
      * Using Parallel Write Only Arrays - Takes less memory
      * Resizable Arrays - AvailableOn Demand to help save memory
      */
 
-    public static Map<byte[],Integer> keywordCount(String htmlText) throws IOException {
+    public static String keywordCount(String htmlText) throws IOException {
 
-
+        StringBuilder keywordBuilder = new StringBuilder();
         if(htmlText.length() < 5000){
 
             logger.info("Keyword Analyser Method Call Function -> keywordCount entered ," + KeywordAnalyser.class.getName());
 
-            //Replace 2 white space to Single White Space
-            String text = htmlText.replaceAll("\\s{2,}", " ").trim();
-            String str = TextNormalizer.Normalizer.getWords(text);
 
-            logger.info("After Normalizing and removing the Stop words - Keyword Analyses. -> " + str);
 
-            StringTokenizer tokenizer = new StringTokenizer(str);
+            for(String tokenizer: htmlText.split(" ")){
 
-            while(tokenizer.hasMoreTokens()){
-                byte[] word = tokenizer.nextToken().trim().getBytes();
-
-                if(keywordMatrix.containsKey(word)){
-                  int frequency = keywordMatrix.get(word);
+                if(keywordMatrix.containsKey(tokenizer)){
+                  int frequency = keywordMatrix.get(tokenizer);
                   frequency = frequency + 1;
-                  keywordMatrix.put(word,frequency);
+                  keywordMatrix.put(tokenizer,frequency);
 
                 }else{
-                  keywordMatrix.put(word,1);
+                  keywordMatrix.put(tokenizer,1);
                 }
             }
 
-            /*
+            Set<String> printall = keywordMatrix.keySet();
+            for(String s : printall){
+                keywordBuilder.append(keywordMatrix.get(s)).append(" --> ").append(s).append(",");
+            }
+
+            //Clean Up
+            keywordMatrix.clear();
+
+           /*
              * Security - Persist and Save the object in Ubuntu File System
              * In Case JVM Breaks down or Crashes - Object could be de-serialized from the file
              * on startup.
              */
-
+  /*
             File file = null;
             FileOutputStream serializeFile = null;
             ObjectOutputStream outputStream = null;
@@ -94,9 +97,9 @@ public class KeywordAnalyser implements Serializable {
                 if(outputStream != null){ outputStream.close(); }
 
                 logger.info("Successfull Closing of FileHandlers in the finally block ," + KeywordAnalyser.class.getName());
-            }
+            } */
 
         }
-        return !(keywordMatrix.isEmpty()) ? keywordMatrix : null;
+        return (keywordBuilder.length() > 0) ? keywordBuilder.toString() : null;
     }
 }

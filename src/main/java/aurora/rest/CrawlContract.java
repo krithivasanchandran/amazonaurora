@@ -1,5 +1,7 @@
 package aurora.rest;
 
+import java.util.concurrent.atomic.AtomicBoolean;
+
 public interface CrawlContract {
     /*
      *Prevention of Ddos Attack
@@ -37,4 +39,10 @@ public interface CrawlContract {
       * Retry - 2 Times on Failure
       */
      short retryRequest = 2;
+
+     /*
+      * GraceFul shutdown AtomicBoolean - Thread Safe - Highly Concurrent
+      * No Shared Memory - Writes directly to the block storage.
+      */
+     AtomicBoolean isShutDown = new AtomicBoolean(false);
 }

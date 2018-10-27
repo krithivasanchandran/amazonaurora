@@ -4,6 +4,10 @@ import Resilience.FailureRecovery.HotRestartManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/*
+ * Memory Used Up Space Calculator in MB. Used for log level analysis.
+ */
+
 public class MemoryNotifier {
 
     private static Logger logger = LoggerFactory.getLogger(MemoryNotifier.class);
@@ -13,11 +17,16 @@ public class MemoryNotifier {
     private MemoryNotifier(){}
 
     public static void printRuntimeMemory() {
-        Runtime runtime = Runtime.getRuntime();
+
+        final Runtime runtime = Runtime.getRuntime();
+
         int numberOfProcessors = runtime.availableProcessors();
         logger.info("Number of processors available to this JVM: " + numberOfProcessors);
+
         runtime.runFinalization();
+
         long memory = runtime.totalMemory() - runtime.freeMemory();
+
         logger.info("Used memory is bytes: " + memory);
         logger.info("Used memory is megabytes: "+ bytesToMegabytes(memory));
     }

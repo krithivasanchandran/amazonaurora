@@ -34,7 +34,6 @@ public class JsoupDomService {
             document = Jsoup.connect(seedUrl)
                                 .userAgent(useragent)
                                 .timeout(10000)
-                                .cookie("CookieName","Crawling for a Challenge")
                                 .followRedirects(true)
                                 .maxBodySize(0)
                                 .ignoreContentType(true)

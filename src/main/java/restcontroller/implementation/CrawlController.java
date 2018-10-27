@@ -78,4 +78,18 @@ public class CrawlController implements CrawlContract {
         }
     }
 
+    /*
+     * Gracefully Shutting down the service - As it should not impact the existing crawl.
+     * All the values are written to the database and then the JVM quits.
+     */
+
+    @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
+    @RequestMapping(value = "/shutdown",method = {RequestMethod.GET})
+    public void gracefulShutdown() {
+        /*
+         * Setting the AtomicBoolean Value to true - CrawlContract.java
+         */
+        isShutDown.set(true);
+    }
+
 }

@@ -57,7 +57,7 @@ public class CrawlDepthFactor1 {
         try {
             Document document = JsoupDomService.JsoupExtractor(childurl,UserAgent);
             if(document != null){
-                HomePageHTMLService.partialExtraction(document,childurl);
+                ChildPageExtractionService.partialExtraction(document,childurl);
             }else{
                 logger.error("HTML Document is NULL Hence Crawling Failed.. Make sure the Website is up and running"
                         + "," + CrawlDepthFactor1.class.getName());
