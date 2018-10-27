@@ -65,16 +65,22 @@ public class LanguageDetection {
         * Extract the Highest Probability Dominant Language - Sort the Collections and return the highest
         * Dominant Language of the Webpage
          */
-        DetectedLanguage detectedDominantLanguage = getProbabilityList.get(getProbabilityList.size()-1);
-        double dominantProbability = detectedDominantLanguage.getProbability();
-        logger.info("Dominant Language Probability is " + dominantProbability + " TimeStamp:: " + GetTimeStamp.getCurrentTimeStamp() );
-        String dominantRawLanguage = detectedDominantLanguage.getLocale().getLanguage();
+        try {
+            DetectedLanguage detectedDominantLanguage = getProbabilityList.get(getProbabilityList.size() - 1);
+            double dominantProbability = detectedDominantLanguage.getProbability();
+            logger.info("Dominant Language Probability is " + dominantProbability + " TimeStamp:: " + GetTimeStamp.getCurrentTimeStamp());
+            String dominantRawLanguage = detectedDominantLanguage.getLocale().getLanguage();
 
-        Language languages = Language.valueOf(dominantRawLanguage);
+            Language languages = Language.valueOf(dominantRawLanguage);
+            logger.info("Get the Full Text Language is :: " + languages.getFullTextLanguage());
 
-        logger.info("Get the Full Text Language is :: " + languages.getFullTextLanguage());
+            return languages.getFullTextLanguage();
 
-        return languages.getFullTextLanguage();
+
+        }catch(Exception ex){
+            ex.getMessage();
+        }
+        return "Not Classified Language";
     }
 
 

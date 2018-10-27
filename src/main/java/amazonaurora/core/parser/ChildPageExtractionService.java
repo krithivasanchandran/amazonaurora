@@ -1,6 +1,7 @@
 package amazonaurora.core.parser;
 
 import Duplicate.metadata.DuplicateFinder;
+import Duplicate.metadata.OnExitStrategy;
 import MemoryListener.MemoryNotifier;
 import aurora.rest.CrawlContract;
 import com.languagedetection.LanguageDetection;
@@ -72,7 +73,7 @@ public class ChildPageExtractionService {
          * Getting meta data Tags about the home page
          */
         String descriptionMetaData = parseMetaData(document);
-        logger.info(descriptionMetaData +","+HomePageHTMLService.class.getName());
+        logger.info(" Meta Tag ----> " + descriptionMetaData +","+HomePageHTMLService.class.getName());
 
         Rankscore += descriptionMetaData != null || !(descriptionMetaData.isEmpty()) ? (short) 10 : (short) 5;
 
@@ -113,6 +114,8 @@ public class ChildPageExtractionService {
         Rankscore += hashCode != null || !(hashCode.isEmpty()) ? (short) 10 : (short) 5;
 
         Boolean duplicateCheck = DuplicateFinder.submitForDuplicatesCheck(hashCode);
+        logger.info("Result of Duplicate Check with MD5 algorithm ---> " + duplicateCheck);
+
         if(duplicateCheck){
             String str = "Has duplicates within the 16 Pages Crawled from the website.";
             logger.info(str + HomePageHTMLService.class.getName());
@@ -124,8 +127,11 @@ public class ChildPageExtractionService {
 
     public static String parseMetaData(Document doc){
         Elements elements = doc.getElementsByTag("meta");
-        for(Element r : elements){
-            if(r.attr("name").contentEquals("description")){
+        for(Element r : elements) {
+            if (r.attr("name").contentEquals("Description")) {
+                String content = r.attr("content");
+                return content;
+            } else if (r.attr("property").contentEquals("Description")) {
                 String content = r.attr("content");
                 return content;
             }
@@ -220,6 +226,8 @@ public class ChildPageExtractionService {
         Rankscore += hashCode != null || !(hashCode.isEmpty()) ? (short) 10 : (short) 5;
 
         Boolean duplicateCheck = DuplicateFinder.submitForDuplicatesCheck(hashCode);
+        logger.info("Result of Duplicate Check with MD5 algorithm ---> " + duplicateCheck);
+
         if(duplicateCheck){
             String str = "Has duplicates within the 16 Pages Crawled from the website.";
             logger.info(str + HomePageHTMLService.class.getName());
@@ -233,6 +241,7 @@ public class ChildPageExtractionService {
          * A graceful exit would allow the program to finalize writing files, or closing connections, etc.
          */
         if(CrawlContract.isShutDown.get()){
+            OnExitStrategy.deleteFiles();
             System.exit(0);
         }
     }

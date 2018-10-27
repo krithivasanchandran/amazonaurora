@@ -1,24 +1,16 @@
 package amazonaurora.core.parser;
 
-import Duplicate.metadata.DuplicateFinder;
+import Duplicate.metadata.OnExitStrategy;
 import MemoryListener.MemoryNotifier;
-import Resilience.FailureRecovery.HotRestartManager;
 import aurora.rest.CrawlContract;
 import aurora.rest.RetryLogic;
-import com.amazonaws.services.databasemigrationservice.model.Connection;
-import com.languagedetection.LanguageDetection;
 import com.languagedetection.TextNormalizer;
 import common.aurora.*;
 import org.jsoup.nodes.Document;
-import org.jsoup.nodes.Element;
-import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.sql.DriverManager;
-import java.sql.SQLException;
-import java.util.Optional;
 import java.util.Set;
 
 /*
@@ -197,6 +189,8 @@ public class HomePageHTMLService {
              * A graceful exit would allow the program to finalize writing files, or closing connections, etc.
              */
             if(CrawlContract.isShutDown.get()){
+
+                OnExitStrategy.deleteFiles();
                 System.exit(0);
             }
         }
