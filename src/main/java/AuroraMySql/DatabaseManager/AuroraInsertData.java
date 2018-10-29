@@ -27,7 +27,7 @@ public class AuroraInsertData {
 
             statement = childDbConnection.createStatement();
             StringBuilder insertQueryBuilder = new StringBuilder();
-            insertQueryBuilder.append("INSERT INTO childpage (homepageurl,childpageurl,dominantLanguage," +
+            insertQueryBuilder.append("INSERT INTO childpagedata (homepageurl,childpageurl,dominantLanguage," +
                     "homepageLength,keywordscount,title,metadata," +
                     "opengraphMetadata,headingTag,hashcode,hasduplicates," +
                     "bodytext,rankscore) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?)");
@@ -56,7 +56,11 @@ public class AuroraInsertData {
             // execute the preparedstatement
             preparedStmt.execute();
 
+            /*
+             * Closing the handler connections to prevent the memory leak.
+             */
             childDbConnection.close();
+            preparedStmt.clearParameters();
 
         } catch (SQLException e) {
             logger.error(e.getMessage());

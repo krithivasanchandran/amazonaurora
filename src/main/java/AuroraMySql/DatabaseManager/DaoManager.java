@@ -19,7 +19,7 @@ public class DaoManager {
         System.out.println("----MySQL JDBC Connection Testing -------");
 
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName("com.mysql.cj.jdbc.Driver");
         } catch (ClassNotFoundException e) {
             logger.info("Trouble Initializing the DB Connection Manager");
             logger.info(e.getMessage());

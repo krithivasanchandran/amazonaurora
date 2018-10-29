@@ -4,7 +4,6 @@ import amazonaurora.core.parser.CoreParserService;
 import aurora.rest.CrawlContract;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -12,7 +11,6 @@ import javax.websocket.server.PathParam;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /* Primary Class - Heart of Crawler Logic - Exposed as MicroService
@@ -40,7 +38,7 @@ public class CrawlController implements CrawlContract {
     //Security Only IP address from that rabbitmq will be able to access it.
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/startCrawl",method = {RequestMethod.GET})
-    public void initiateCrawl(@PathParam("url") String url) {
+    public String initiateCrawl(@PathParam("url") String url) {
 
         if(rateLimiter.isEmpty()){
             logger.info("Master Rest initiateCrawl URL submitted from rabbitmq is  ---> " + url);
@@ -72,10 +70,11 @@ public class CrawlController implements CrawlContract {
                     rateLimiter.clear();
                     rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
                     CoreParserService.submitSeed(url);
-
+                    return "Successfull";
                 }
             }
         }
+        return "notsuccessful";
     }
 
     /*

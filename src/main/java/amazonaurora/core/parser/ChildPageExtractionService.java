@@ -179,7 +179,7 @@ public class ChildPageExtractionService {
          * Perform Language Detection - Optional<T> - Chaining if the document text is null or empty
          * then try to send the entire body text as input.
          */
-        String dominantLang = LanguageDetection.InitiateLang(Optional.ofNullable(document.body().text()).orElse(document.wholeText()));
+        String dominantLang = LanguageDetection.InitiateLang(document.body().text());
         logger.info("Dominant Language " + dominantLang + ","+ HomePageHTMLService.class.getName());
 
         Rankscore += dominantLang != null || !(dominantLang.isEmpty()) ? (short)10 : (short)5;

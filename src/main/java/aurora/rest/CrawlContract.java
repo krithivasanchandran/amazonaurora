@@ -5,13 +5,15 @@ import java.util.concurrent.atomic.AtomicBoolean;
 public interface CrawlContract {
     /*
      *Prevention of Ddos Attack
+     * Reduced the TotalChildCrawlURLs from 15 to 8
+     * to prevent non blcoking of resources.
      */
-    short totalCrawlSeeds = 15;
+    short totalCrawlSeeds = 8;
 
     /*
      * Initiates Crawl based on the given Seed URL - Subscribed from the RabbitMQ Head Queue
      */
-    public void initiateCrawl(String seed);
+    public String initiateCrawl(String seed);
 
     /* Critical - To Avoid OverThrottling the Servers
      * CrawlDepth - Factor of 2 hops from home page

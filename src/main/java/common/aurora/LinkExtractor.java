@@ -25,7 +25,7 @@ public class LinkExtractor {
     public static Set<String> extractOutgoingLinks(Document document, String rooturl) {
 
         final Set<String> duplicates = new HashSet<String>();
-        final Set<String> outgoingSeeds = new HashSet<String>(17);
+        final Set<String> outgoingSeeds = new HashSet<String>(9);
 
         document.select("a").stream().forEach((r1) -> {
 
@@ -45,12 +45,27 @@ public class LinkExtractor {
                     && !rawHref.contains("snapchat.com")
                     && !rawHref.contains("twitter.com")
                     && !rawHref.contains("instagram.com")
+                    && !rawHref.contains("tumblr.com")
+                    && !rawHref.contains("flickr.com")
+                    && !rawHref.contains("whatsapp.com")
+                    && !rawHref.contains("quora.com")
+                    && !rawHref.contains("vine.co")
+                    && !rawHref.contains("periscope.tv")
                     && !rawHref.contains("pinterest.com")
                     && !rawHref.contains("linkedin.com")
                     && !rawHref.contains("reddit.com")
                     && !rawHref.contains("digg.com")
                     && !rawHref.contains("yahoo.com")
-                    && !rawHref.startsWith("javascript");
+                    && !rawHref.startsWith("javascript")
+                    && !rawHref.contains("stumbleupon.com")
+                    && !rawHref.contains("del.icio.us")
+                    && !rawHref.contains("viber.com")
+                    && !rawHref.contains("houzz.com")
+                    && !rawHref.contains("myspace.com")
+                    && !rawHref.contains("soundcloud.com")
+                    && !rawHref.contains("vimeo.com")
+                    && !rawHref.contains("OK.ru")
+                    && !rawHref.contains("bizsugar.com");
 
                                 /******************************************
                                  * Validate if href contains http or https
