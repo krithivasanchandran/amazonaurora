@@ -1,7 +1,5 @@
 package amazonaurora.core.parser;
 
-import aurora.rest.CrawlContract;
-import com.languagedetection.LanguageDetection;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -10,8 +8,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 
 public class HttpCore {
@@ -32,12 +28,12 @@ public class HttpCore {
             CloseableHttpClient httpclient = HttpClients.createSystem();
 
             RequestConfig requestConfig = RequestConfig.custom()
-                                                .setSocketTimeout(4000)
-                                                .setConnectTimeout(4000)
-                                                .setConnectionRequestTimeout(5000)
-                                                .setCircularRedirectsAllowed(false)
-                                                .setRedirectsEnabled(false)
-                                                .build();
+                    .setSocketTimeout(4000)
+                    .setConnectTimeout(4000)
+                    .setConnectionRequestTimeout(5000)
+                    .setCircularRedirectsAllowed(false)
+                    .setRedirectsEnabled(false)
+                    .build();
 
             HttpGet getRequest = new HttpGet(url);
             getRequest.setConfig(requestConfig);
@@ -59,11 +55,12 @@ public class HttpCore {
             //They are temporary and permanent redirects
             //If there is a success 200 then return true
             boolean httpStatus = response.getStatusLine().getStatusCode() == 301 ||
-                                    response.getStatusLine().getStatusCode() == 302 ||
-                                    response.getStatusLine().getStatusCode() == 200;
+                    response.getStatusLine().getStatusCode() == 302 ||
+                    response.getStatusLine().getStatusCode() == 200;
 
             logger.info(" HTTP Return Response is " + httpStatus + HttpCore.class.getName());
 
+            /* Writing and reading files are an expensive operation.
             File filehandler = null;
             FileWriter writer = null;
             try{
@@ -91,14 +88,12 @@ public class HttpCore {
             }catch(IOException ex){
                 logger.error(ex.getMessage());
             }finally{
-                /*
-                 * Closing Handlers to avoid memory leaks and GC pauses
-                 */
+
                 if(writer != null){
                     writer.flush();
                     writer.close();
                 }
-            }
+            } */
 
             return httpStatus;
 

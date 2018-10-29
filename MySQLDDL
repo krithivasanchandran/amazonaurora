@@ -1,0 +1,89 @@
+Home Page Schema
+
+/*
+ * Home Page - WebPage - Table Schema Columns
+ */
+**********************************************************************************************************************************************
+ homepageurl            --> Home Page Root URL - Type varchar
+ dominantLanguage       --> HomePage Dominant Language Detected     --> Type varchar
+ homepagelength         --> Length of Characters of body Text       --> Type INT
+ keywordscount          --> Keyword Analysis of type TEXT           --> Type TEXT
+ title                  --> Title Tag of WebPage                    --> type varchar
+ metadata               --> Meta Data Tag of Web Page               --> type varchar
+ opengraphMetadata      --> Facebook <og:> tag in html Home Page    --> type TEXT
+ headingTag             --> <h1> > <h2> > <h3> > <h4> > <h5> > <h6> - Order of precedence heading Tag. ---> type varchar
+ hashcode               --> MD5 Algorithm CheckSum                  --> type varchar
+ hasduplicates          --> Duplicate Hash Based Content Checker , Checks for duplicates within the crawled URL's --> type varchar
+ robotsExist            --> Robots.txt exists --> Ping Based Detection --> type varchar
+ isSitemapExist         --> Sitemap.xml exists                      --> type varchar
+ outgoinglinks          --> Integer value of Outgoing Links count from home page        --> type INT
+ bodytext               --> String content of html body -> Less than 5000 characters    --> type varchar (less than 5000 characters)
+ contactNumbers         --> String content of contact numbers found in ContactUs Page   --> type varchar
+ emailList              --> String content of email Ids found in ContactUs Page         --> type varchar
+ addressExtracted       --> String containing - City Zip Code, State                    --> type varchar
+
+ rankscore              --> Rank from 0 to 100 --> 100 being the highest score , 0 being the least score - type INT.
+
+**********************************************************************************************************************************************
+
+
+CREATE TABLE homepagedata (crawl_id INT AUTO_INCREMENT PRIMARY KEY, homepageurl VARCHAR(200), dominantLanguage VARCHAR(50),
+                            homepageLength INT, keywordscount TEXT, title VARCHAR(500), metadata VARCHAR(500),
+                            opengraphMetadata  TEXT, headingTag VARCHAR(500),hashcode VARCHAR(500),
+                            hasduplicates VARCHAR(50), robotsExist VARCHAR(50), isSitemapExist VARCHAR(50),
+                            outgoinglinks INT, bodytext TEXT, contactNumbers VARCHAR(1000),
+                            emailList VARCHAR(1000), addressExtracted VARCHAR(1000), rankscore INT);
+
+ALTER TABLE `sys`.`homepagedata`
+ADD INDEX `crawlid` (`crawl_id` ASC, `homepageurl` ASC) VISIBLE;
+
+
+**********************************************************************************************************************************************
+
+/*
+ * Child Page - WebPage Contents - Table Schema Columns
+ * Limited to 15 Child Pages Crawling
+ */
+
+  homepageurl            --> Home Page Root URL - Type varchar
+  childpageurl           --> Child Page URL     - Type varchar
+  dominantLanguage       --> HomePage Dominant Language Detected     --> Type varchar
+  homepagelength         --> Length of Characters of body Text       --> Type INT
+  keywordscount          --> Keyword Analysis of type TEXT           --> Type TEXT
+  title                  --> Title Tag of WebPage                    --> type varchar
+  metadata               --> Meta Data Tag of Web Page               --> type varchar
+  opengraphMetadata      --> Facebook <og:> tag in html Home Page    --> type TEXT
+  bodytext               --> String content of html body -> Less than 5000 characters    --> type varchar (less than 5000 characters)
+  headingTag             --> <h1> > <h2> > <h3> > <h4> > <h5> > <h6> - Order of precedence heading Tag. ---> type varchar
+  hashcode               --> MD5 Algorithm CheckSum                  --> type varchar
+  hasduplicates          --> Duplicate Hash Based Content Checker , Checks for duplicates within the crawled URL's --> type varchar
+
+  rankscore              --> Rank from 0 to 100 --> 100 being the highest score , 0 being the least score - type INT.
+
+**********************************************************************************************************************************************
+
+CREATE TABLE childpage (child_crawl_id INT AUTO_INCREMENT PRIMARY KEY, homepageurl VARCHAR(200), childpageurl VARCHAR(200),
+                            dominantLanguage VARCHAR(50),homepageLength INT, keywordscount TEXT, title VARCHAR(500),
+                            metadata VARCHAR(500),opengraphMetadata  TEXT, headingTag VARCHAR(500),hashcode VARCHAR(500),
+                            hasduplicates VARCHAR(50), bodytext TEXT, rankscore INT);
+
+use sys --> query : use database_name
+
+ALTER TABLE `sys`.`childpagedata`
+ADD INDEX `childcrawlid` (`child_crawl_id` ASC, `childpageurl` ASC) VISIBLE;
+
+
+**********************************************************************************************************************************************
+
+Lessons Learnt - When using Large data type it is preferrable to use TEXT or BLOB instead of varchar
+
+TEXT – 64KB (65,535 characters)
+The TEXT data type can hold up to 64 KB that is equivalent to 65535 (2^16 – 1) characters. TEXT also requires 2 byte overhead.
+
+The TEXT can hold the body of an HTML Page.
+
+INSERT INTO homepagedata (homepageurl,dominantLanguage,homepageLength,keywordscount,title,
+ metadata,opengraphMetadata,headingTag,hashcode,hasduplicates,robotsExist,isSitemapExist,
+                       outgoinglinks,bodytext,contactNumbers,emailList,addressExtracted,
+                       rankscore)                VALUES('www.google.com',
+                       'english', '2345','asdaikdhjksdasdasdadhjkashdjkah',               'this is a title','hellow world metadata','asdasd open graph metadata',               'heading tags heading tags','asdasdadasdasdasds','true','true','true',               '123123','asdasdasdasdasdas','12351231231-312-123123','asdasd@gmail.com c.keerthivasan@gmail.com',               'address','100')

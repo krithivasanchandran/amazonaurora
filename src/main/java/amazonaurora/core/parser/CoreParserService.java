@@ -62,10 +62,11 @@ public class CoreParserService {
         final String UserAgent = uagent.userAgentRotator(randShort);
         logger.info("Current User Agent String Pointing is " + UserAgent);
 
+        /* Frequent Ping Test results in IP Banning hence avoided it.
         if(PingTester.performWebsiteTest(seedurl)){
             logger.error("Ping Test Failed !! Make sure the website is up and running" + "," + CoreParserService.class.getName() + "," +
                     GetTimeStamp.getCurrentTimeStamp().toString());
-        }
+        }*/
 
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 

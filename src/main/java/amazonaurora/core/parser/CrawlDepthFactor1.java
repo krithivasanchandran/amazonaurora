@@ -21,18 +21,18 @@ public class CrawlDepthFactor1 {
 
     private CrawlDepthFactor1(){}
 
-    public static void crawlAtDepthFactor1(Set<String> childlinks){
+    public static void crawlAtDepthFactor1(Set<String> childlinks,final String parentUrl){
 
         /***************************************************************************
-         * PARALLEL STREAMS - > PARALLEL QUERY EXECUTION - CRAWLS - CHILD URL's
+         *  STREAMS - >  QUERY EXECUTION - CRAWLS - CHILD URL's
          **************************************************************************/
-        childlinks.parallelStream().forEach((url) -> {
-            submitChildUrls(url);
+        childlinks.forEach((url) -> {
+            submitChildUrls(parentUrl,url);
         });
 
     }
 
-    private static void submitChildUrls(String childurl){
+    private static void submitChildUrls(final String homepageURL,String childurl){
         logger.info("Received the Child URL from the CrawlDepthFactor 1 Class" + childurl);
 
         //Generate the UserAgent String
@@ -47,17 +47,20 @@ public class CrawlDepthFactor1 {
         final String UserAgent = uagent.userAgentRotator(randShort);
         logger.info("Current User Agent String Pointing is " + UserAgent);
 
-        if(PingTester.performWebsiteTest(childurl)){
+
+        /* Frequent Ping Test results in IP Banning hence avoided it.
+
+       /* if(PingTester.performWebsiteTest(childurl)){
             logger.error("Ping Test Failed !! Make sure the website is up and running" + "," + CrawlDepthFactor1.class.getName() + "," +
                     GetTimeStamp.getCurrentTimeStamp().toString());
-        }
+        }*/
 
         logger.info("Proceeding with Extraction as Ping Test Successfull");
 
         try {
             Document document = JsoupDomService.JsoupExtractor(childurl,UserAgent);
             if(document != null){
-                ChildPageExtractionService.partialExtraction(document,childurl);
+                ChildPageExtractionService.partialExtraction(document,childurl,homepageURL);
             }else{
                 logger.error("HTML Document is NULL Hence Crawling Failed.. Make sure the Website is up and running"
                         + "," + CrawlDepthFactor1.class.getName());
