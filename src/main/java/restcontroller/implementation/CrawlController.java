@@ -2,8 +2,10 @@ package restcontroller.implementation;
 
 import amazonaurora.core.parser.CoreParserService;
 import aurora.rest.CrawlContract;
+import com.sun.tools.internal.ws.processor.model.Response;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
@@ -38,7 +40,7 @@ public class CrawlController implements CrawlContract {
     //Security Only IP address from that rabbitmq will be able to access it.
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/startCrawl",method = {RequestMethod.GET})
-    public String initiateCrawl(@PathParam("url") String url) {
+    public ResponseEntity initiateCrawl(@PathParam("url") String url) {
 
         if(rateLimiter.isEmpty()){
             logger.info("Master Rest initiateCrawl URL submitted from rabbitmq is  ---> " + url);
@@ -49,6 +51,7 @@ public class CrawlController implements CrawlContract {
                 logger.error("Seed URL required to Start Crawl . It is empty or null. Seed Url to be in http://www.example.com form");
             }else{
                 CoreParserService.submitSeed(url);
+                return ResponseEntity.status(200).build();
             }
         }else{
             /*
@@ -70,11 +73,11 @@ public class CrawlController implements CrawlContract {
                     rateLimiter.clear();
                     rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
                     CoreParserService.submitSeed(url);
-                    return "Successfull";
+                    return ResponseEntity.status(200).build();
                 }
             }
         }
-        return "notsuccessful";
+        return ResponseEntity.status(201).build();
     }
 
     /*
