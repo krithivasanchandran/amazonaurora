@@ -39,7 +39,7 @@ public class CoreParserService {
 
             if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
                 logger.info("Resume crawling from last left point -> Applies only to Child Outgoing Url's");
-                CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs);
+                CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs,"resumedone.com");
             }else{
                 logger.info("Failed to resume crawling as the seed URLs are not present");
             }
