@@ -37,7 +37,7 @@ public class CrawlController implements CrawlContract {
         final Map<Long,AtomicInteger> rateLimiter = new HashMap<Long,AtomicInteger>(1);
 
 
-    //Security Only IP address from that rabbitmq will be able to access it.
+    //Security Only IP address from where Master Node is hosted will be able to access it.
     @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/startCrawl",method = {RequestMethod.GET})
     public ResponseEntity initiateCrawl(@PathParam("url") String url) {
@@ -65,9 +65,14 @@ public class CrawlController implements CrawlContract {
                 /*
                  * Security Implementation - Stricter control
                  * Validates if the request is lesser than 3 minutes wait time
+                 * Response Code HTTP - 412 Precondition Failed.
                  */
                 if(currentTime - l < apiRateLimiter){
-                    logger.warn(" Cannot Invoke Crawler ! Surpassed the Service Level Agreement - Please try after 1 minute");
+                    logger.warn(" Cannot Invoke Crawler ! Surpassed the Service Level Agreement - Please try after 30 seconds");
+                    logger.warn("Current time is " + currentTime);
+                    logger.warn("Time in the SLA is " + l);
+                    logger.warn("Difference is " + (currentTime - l));
+                    return ResponseEntity.status(412).build();
                 }else{
 
                     rateLimiter.clear();

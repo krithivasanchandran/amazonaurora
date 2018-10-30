@@ -29,7 +29,7 @@ public interface CrawlContract {
      * 60 seconds - 1 request / 3 seconds - 20 Requests
      * Security Enforce Rule - API Rate Limiter = 60000
      */
-    int apiRateLimiter = 60000;
+    int apiRateLimiter = 30000;
 
     /*
      *
