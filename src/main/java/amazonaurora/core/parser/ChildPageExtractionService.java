@@ -6,7 +6,6 @@ import Duplicate.metadata.DuplicateFinder;
 import Duplicate.metadata.OnExitStrategy;
 import MemoryListener.MemoryNotifier;
 import aurora.rest.CrawlContract;
-import com.amazonaws.services.simpleworkflow.model.ChildWorkflowExecutionCanceledEventAttributes;
 import com.languagedetection.LanguageDetection;
 import com.languagedetection.TextNormalizer;
 import common.aurora.KeywordAnalyser;
@@ -162,7 +161,7 @@ public class ChildPageExtractionService {
                 metaBuilder.append(r.attr("content"));
 
             }else{
-                logger.info("None of the meta tags matched !! "+ ChildWorkflowExecutionCanceledEventAttributes.class.getName());
+                logger.info("None of the meta tags matched !! "+ ChildPageExtractionService.class.getName());
             }
         }
         return metaBuilder.length() > 0 ? metaBuilder.toString() : "No Meta";
