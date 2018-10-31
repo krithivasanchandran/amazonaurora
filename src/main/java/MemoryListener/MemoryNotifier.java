@@ -6,6 +6,8 @@ import org.slf4j.LoggerFactory;
 
 /*
  * Memory Used Up Space Calculator in MB. Used for log level analysis.
+ * PrintRuntimeMemory() prints the free RAM space left in MegaBytes.
+ * Our Jar runs in less than 900 MB Ram.
  */
 
 public class MemoryNotifier {

@@ -24,7 +24,7 @@ public final class HotRestartManager implements Serializable {
      * present in their respective directory.
      */
 
-    private static final String user = "krithivasan";
+    private static final String user = "ec2-user";
 
 
     // ---> Security Check - Objects are stored to make it non readable by hacker.

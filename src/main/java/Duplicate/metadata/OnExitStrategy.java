@@ -17,9 +17,7 @@ public final class OnExitStrategy {
 
     private OnExitStrategy(){}
 
-    private static final String[] filenames = {"/home/krithivasan/successLinks.txt" ,
-                                                    "/home/krithivasan/failureLinks.txt",
-                                                            "/home/krithivasan/childLinks.ser"};
+    private static final String[] filenames = {"/home/krithivasan/childLinks.ser"};
 
     private static Logger logger = LoggerFactory.getLogger(OnExitStrategy.class);
 
