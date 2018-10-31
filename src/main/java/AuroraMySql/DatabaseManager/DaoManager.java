@@ -30,7 +30,7 @@ public class DaoManager {
      * loading of the driver class is generally unnecessary.
      *
      */
-    public static Connection connectJDBCTLocalMySQL() {
+    public static Connection connectJDBCAuroraCloudMySQL() {
 
         try {
             System.out.println("Loading driver...");

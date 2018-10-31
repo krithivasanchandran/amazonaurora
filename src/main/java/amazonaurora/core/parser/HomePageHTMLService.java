@@ -119,7 +119,7 @@ public class HomePageHTMLService {
 
             logger.info("The ranker value is ----> " + HomePageHTMLService.Rankscore);
 
-            Connection dbconn = DaoManager.connectJDBCTLocalMySQL();
+            Connection dbconn = DaoManager.connectJDBCAuroraCloudMySQL();
             if(dbconn != null){
 
                 DaoManager.insertHomePageWebDataValuesToAuroraMySQL(dbconn,seedUrl,addressBuilder.toString(),emailList.toString(),contactNumbersList.toString(),bodytext,totalOutLinks,(isSiteMapXMLExists(seedUrl) ? "true" : "false"),(isRobotsTxtExists(seedUrl) ? "true" : "false"),Rankscore);

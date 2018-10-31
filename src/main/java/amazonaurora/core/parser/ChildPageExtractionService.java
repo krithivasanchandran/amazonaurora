@@ -263,7 +263,7 @@ public class ChildPageExtractionService {
         MemoryNotifier.printRuntimeMemory();
 
         //Write to the database.
-        Connection childDbConnection = DaoManager.connectJDBCTLocalMySQL();
+        Connection childDbConnection = DaoManager.connectJDBCAuroraCloudMySQL();
         if(childDbConnection != null) {
 
             AuroraInsertData.insertChildWebPageData(childDbConnection,rootURL,seedUrl,dominantLang,
