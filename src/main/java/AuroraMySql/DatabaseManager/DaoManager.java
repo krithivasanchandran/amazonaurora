@@ -9,17 +9,34 @@ import java.sql.*;
 
 public class DaoManager {
 
+    private static final String hostname = "crawldb.c9nylpylkekg.us-east-1.rds.amazonaws.com";
+    private static final String port = "3306";
+    private static final String dbName = "krithivasan";
+    private static final String userName = "krithivasan";
+    private static final String password = "Springboot1234";
+
+    private static final String jdbcUrl = "jdbc:mysql://" + hostname + ":" +
+            port + "/" + dbName + "?user=" + userName + "&password=" + password;
+
     private static Logger logger = LoggerFactory.getLogger(DaoManager.class);
 
     private DaoManager() {
     }
 
+    /*
+     * Changes brought to the driver class
+     * Loading class `com.mysql.jdbc.Driver'. This is deprecated. The new driver class is
+     * `com.mysql.cj.jdbc.Driver'. The driver is automatically registered via the SPI and manual
+     * loading of the driver class is generally unnecessary.
+     *
+     */
     public static Connection connectJDBCTLocalMySQL() {
 
-        System.out.println("----MySQL JDBC Connection Testing -------");
-
         try {
+            System.out.println("Loading driver...");
             Class.forName("com.mysql.cj.jdbc.Driver");
+            System.out.println("Driver loaded!");
+
         } catch (ClassNotFoundException e) {
             logger.info("Trouble Initializing the DB Connection Manager");
             logger.info(e.getMessage());
@@ -31,7 +48,7 @@ public class DaoManager {
 
         try {
             connection = DriverManager.
-                    getConnection("jdbc:mysql://localhost:3306/sys", "root", "Springboot%%1234");
+                    getConnection(jdbcUrl);
         } catch (SQLException e) {
             logger.info("Connection to Localhost MySQL Instance Failed!:\n" + e.getMessage());
         }

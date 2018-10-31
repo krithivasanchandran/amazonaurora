@@ -34,8 +34,10 @@ CREATE TABLE homepagedata (crawl_id INT AUTO_INCREMENT PRIMARY KEY, homepageurl 
                             outgoinglinks INT, bodytext TEXT, contactNumbers VARCHAR(1000),
                             emailList VARCHAR(1000), addressExtracted VARCHAR(1000), rankscore INT);
 
-ALTER TABLE `sys`.`homepagedata`
-ADD INDEX `crawlid` (`crawl_id` ASC, `homepageurl` ASC) VISIBLE;
+use sys --> query : use database_name , eg: use krithivasan
+
+ALTER TABLE `krithivasan`.`homepagedata`
+ADD INDEX `crawlid` (`crawl_id` ASC, `homepageurl` ASC);
 
 
 **********************************************************************************************************************************************
@@ -67,10 +69,10 @@ CREATE TABLE childpagedata (child_crawl_id INT AUTO_INCREMENT PRIMARY KEY, homep
                             metadata VARCHAR(500),opengraphMetadata  TEXT, headingTag VARCHAR(500),hashcode VARCHAR(500),
                             hasduplicates VARCHAR(50), bodytext TEXT, rankscore INT);
 
-use sys --> query : use database_name
+use sys --> query : use database_name , eg: use krithivasan
 
-ALTER TABLE `sys`.`childpagedata`
-ADD INDEX `childcrawlid` (`child_crawl_id` ASC, `childpageurl` ASC) VISIBLE;
+ALTER TABLE `krithivasan`.`childpagedata`
+ADD INDEX `childcrawlid` (`child_crawl_id` ASC, `childpageurl` ASC);
 
 
 **********************************************************************************************************************************************

@@ -31,7 +31,7 @@ public class CrawlController implements CrawlContract {
         AtomicInteger requestThreshold = new AtomicInteger();
 
         /*
-         * Service Level Agreement - Accept or Consume Request - 1 Request / 3 minutes interval
+         * Service Level Agreement - Accept or Consume Request - 1 Request / 30 seconds interval
          * Setting the Initial Capacity 1 to Save RAM Space - Low Memory FootPrint
          */
         final Map<Long,AtomicInteger> rateLimiter = new HashMap<Long,AtomicInteger>(1);
