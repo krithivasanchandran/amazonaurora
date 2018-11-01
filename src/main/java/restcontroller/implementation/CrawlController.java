@@ -94,12 +94,13 @@ public class CrawlController implements CrawlContract {
      */
 
     @RequestMapping(value = "/shutdown",method = {RequestMethod.GET})
-    public void gracefulShutdown() {
+    public ResponseEntity gracefulShutdown() {
         /*
          * Setting the AtomicBoolean Value to true - CrawlContract.java
          * JVM shuts down only after finish crawling the child URLS.
          */
         isShutDown.set(true);
+        return ResponseEntity.status(200).build();
     }
 
 }
