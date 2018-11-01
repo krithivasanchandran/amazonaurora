@@ -16,6 +16,7 @@ import java.util.Set;
 public class CoreParserService {
 
     private static Logger logger = LoggerFactory.getLogger(CoreParserService.class);
+    private static final String dummyParentURLOnHotReload = "www.example.com";
 
     /*
      * Avoiding NEW Operator where it creates unwanted Objects.
@@ -39,7 +40,7 @@ public class CoreParserService {
 
             if(resumeRestartedSeedURLs != null || !resumeRestartedSeedURLs.isEmpty()){
                 logger.info("Resume crawling from last left point -> Applies only to Child Outgoing Url's");
-                CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs,"resumedone.com");
+                CrawlDepthFactor1.crawlAtDepthFactor1(resumeRestartedSeedURLs,dummyParentURLOnHotReload);
             }else{
                 logger.info("Failed to resume crawling as the seed URLs are not present");
             }

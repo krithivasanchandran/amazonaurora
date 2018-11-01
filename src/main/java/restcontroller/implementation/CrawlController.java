@@ -37,8 +37,11 @@ public class CrawlController implements CrawlContract {
         final Map<Long,AtomicInteger> rateLimiter = new HashMap<Long,AtomicInteger>(1);
 
 
-    //Security Only IP address from where Master Node is hosted will be able to access it.
-    @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
+    /*
+     * Entry point for submitting SEED URLS for crawling.
+     * Accepts URL as the path parameters: eg: http://localhost:8080/startCrawl?url=http://flipkart.com
+     */
+
     @RequestMapping(value = "/startCrawl",method = {RequestMethod.GET})
     public ResponseEntity initiateCrawl(@PathParam("url") String url) {
 
@@ -90,11 +93,11 @@ public class CrawlController implements CrawlContract {
      * All the values are written to the database and then the JVM quits.
      */
 
-    @CrossOrigin(origins = "http://localhost:8080", maxAge = 8000)
     @RequestMapping(value = "/shutdown",method = {RequestMethod.GET})
     public void gracefulShutdown() {
         /*
          * Setting the AtomicBoolean Value to true - CrawlContract.java
+         * JVM shuts down only after finish crawling the child URLS.
          */
         isShutDown.set(true);
     }
