@@ -11,7 +11,7 @@ public class DaoManager {
 
     private static final String hostname = "crawldb.c9nylpylkekg.us-east-1.rds.amazonaws.com";
     private static final String port = "3306";
-    private static final String dbName = "krithivasan";
+    private static final String dbName = "crawldb";
     private static final String userName = "krithivasan";
     private static final String password = "Springboot1234";
 

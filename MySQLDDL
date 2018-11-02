@@ -34,9 +34,9 @@ CREATE TABLE homepagedata (crawl_id INT AUTO_INCREMENT PRIMARY KEY, homepageurl 
                             outgoinglinks INT, bodytext TEXT, contactNumbers VARCHAR(1000),
                             emailList VARCHAR(1000), addressExtracted VARCHAR(1000), rankscore INT);
 
-use sys --> query : use database_name , eg: use krithivasan
+use sys --> query : use database_name , eg: use crawldb
 
-ALTER TABLE `krithivasan`.`homepagedata`
+ALTER TABLE `crawldb`.`homepagedata`
 ADD INDEX `crawlid` (`crawl_id` ASC, `homepageurl` ASC);
 
 
@@ -71,7 +71,7 @@ CREATE TABLE childpagedata (child_crawl_id INT AUTO_INCREMENT PRIMARY KEY, homep
 
 use sys --> query : use database_name , eg: use krithivasan
 
-ALTER TABLE `krithivasan`.`childpagedata`
+ALTER TABLE `crawldb`.`childpagedata`
 ADD INDEX `childcrawlid` (`child_crawl_id` ASC, `childpageurl` ASC);
 
 
