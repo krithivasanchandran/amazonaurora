@@ -46,7 +46,7 @@ public class CrawlController implements CrawlContract {
     public ResponseEntity initiateCrawl(@PathParam("url") String url) {
 
         if(rateLimiter.isEmpty()){
-            logger.info("Master Rest initiateCrawl URL submitted from rabbitmq is  ---> " + url);
+            logger.info("Master Rest initiateCrawl URL submitted by MasterCrawler is  ---> " + url);
 
             rateLimiter.put(System.currentTimeMillis(),new AtomicInteger(1));
 
