@@ -1,6 +1,6 @@
-#Slave Crawler : 
+Slave Crawler : 
 
-#How I developed Micro-service that is so light weight and runs on 800 MB RAM : 
+How I developed Micro-service that is so light weight and runs on 800 MB RAM : 
 
 •	Avoiding objects – Specially Class Objects – Objects are heavy weight occupying 48 bytes.
 •	Use Global Instance Static Classes – that is common and can be shared across instances. 
@@ -30,14 +30,14 @@ Eg: Map<byte[],Integer> container = new HashMap<byte[],Integer>(1), defines Map 
 •	User Agent Rotator – Rotates the User Agent – with different User Agent Strings.
 •	Facebook <og:> open graph tag extractor – title , description ,url etc.
 
-#Security Measures: 
+Security Measures: 
 •	Rate Limiting – Slave crawler – AmazonAurora (project) , 30 Seconds to crawl the 1 + 8 child URLs. Within which if we try to submit the URLS it doesn’t accept it. Prevention of DDos Attack strategy.
 •	No More than 9 HTTP Links can be crawled from the same end server – to be crawler using different user agent strings.
 •	CrawlContract.java – has the politeness delay between each request as 1500 milliseconds.
 •	Use of final across class which cannot be extended or modified.
 •	ThreadSafe Immutability – Atomic Integer , Singleton classes to avoid repeated URL submission errors.
 
-#Fault Tolerance-
+Fault Tolerance-
 HOTRESTARTMANAGER.JAVA PERSISTS THE URLS TO OPERATING SYSTEM FILE MANAGER , WHEN CRAWLER BREAKS IT RESUMES TO START CRAWLING FROM THE FILE /HOME/EC2-USER/ PATH.
 
 
@@ -53,7 +53,7 @@ http://localhost:8080/startCrawl?url=http://flipkart.com
 
 You should be able to see the logs in the console.
 
-# AWS Cloud Setup
+AWS Cloud Setup
 
 If there are changes to endpoint Aurora MySQL RDS -> crawldb.c9nylpylkekg.us-east-1.rds.amazonaws.com other than this, then you have to follow the 
 below steps: 
