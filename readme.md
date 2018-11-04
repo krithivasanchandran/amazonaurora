@@ -44,9 +44,9 @@ HOTRESTARTMANAGER.JAVA PERSISTS THE URLS TO OPERATING SYSTEM FILE MANAGER , WHEN
 # In Local Setup:
 
 Slave Web Crawler – 
-•	Git clone https://github.com/krithivasanchandran/amazonaurora.git
-•	Mvn clean install
-•	In ide – Right Click on AuroraMainApp.java -> Run as Java Application.
+1.	Git clone https://github.com/krithivasanchandran/amazonaurora.git
+2. 	Mvn clean install
+3.	In ide – Right Click on AuroraMainApp.java -> Run as Java Application.
 
 #Test using this URL : 
 http://localhost:8080/startCrawl?url=http://flipkart.com
